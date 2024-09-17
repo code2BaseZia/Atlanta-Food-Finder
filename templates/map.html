@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Google Maps with Continuous Location Tracking</title>
+    <title>Google Maps with Continuous Location Tracking and Nearby Restaurants</title>
     <style>
       /* Ensure the map has a defined size */
       #map {
@@ -9,40 +9,49 @@
         width: 100%;
       }
 
-      /* Style for the custom location button (optional) */
-      .custom-map-control-button {
-        background-color: #fff;
-        border: 2px solid #fff;
-        border-radius: 3px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-        margin: 10px;
-        padding: 0 12px;
+      /* Optional: Style for InfoWindows */
+      .info-window {
+        font-family: Arial, sans-serif;
         font-size: 14px;
-        line-height: 40px;
-        color: #333;
-        text-align: center;
-        cursor: pointer;
+      }
+
+      /* Optional: Loading spinner */
+      #loading {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.8);
+        padding: 10px 20px;
+        border-radius: 5px;
+        display: none;
+        z-index: 5;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
       }
     </style>
   </head>
   <body>
+    <!-- Loading Indicator -->
+    <div id="loading">Loading nearby restaurants...</div>
+
     <!-- Map container -->
     <div id="map"></div>
 
     <!-- Google Maps JavaScript API -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAk29gOlWg8QN-M1itRXEEHcRwu9-8QcQk&callback=initMap&libraries=places"
+      src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap&libraries=places"
       async
       defer
     ></script>
 
     <script>
-      let map, infoWindow, userMarker, watchId;
+      let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
+      let restaurantMarkers = []; // To keep track of restaurant markers
 
       function initMap() {
-        // Initialize the map centered at a default location
+        // Initialize the map with a default center; this will be updated once the user's location is obtained
         map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 37.4220656, lng: -122.0840897 }, // Default center (Googleplex)
+          center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
           zoom: 15,
         });
 
@@ -62,23 +71,19 @@
           },
         });
 
-        // Optional: Create the "Pan to Current Location" button
-        const locationButton = document.createElement("button");
-        locationButton.textContent = "Pan to Current Location";
-        locationButton.classList.add("custom-map-control-button");
-        map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
-
-        // Event listener for the location button
-        locationButton.addEventListener("click", () => {
-          if (userMarker.getPosition()) {
-            map.panTo(userMarker.getPosition());
-            map.setZoom(15); // Adjust zoom level as needed
-          } else {
-            infoWindow.setContent("Current location not available.");
-            infoWindow.setPosition(map.getCenter());
-            infoWindow.open(map);
-          }
+        // Initialize the accuracy circle
+        accuracyCircle = new google.maps.Circle({
+          strokeColor: "#4285F4",
+          strokeOpacity: 0.4,
+          strokeWeight: 1,
+          fillColor: "#4285F4",
+          fillOpacity: 0.2,
+          map: map,
+          radius: 0, // Will be updated with accuracy
         });
+
+        // Initialize the Places service
+        placesService = new google.maps.places.PlacesService(map);
 
         // Start tracking the user's location
         startTracking();
@@ -97,12 +102,24 @@
               // Update the user marker's position
               userMarker.setPosition(pos);
 
-              // Optionally, center the map on the user's location
+              // Update the accuracy circle
+              accuracyCircle.setCenter(pos);
+              accuracyCircle.setRadius(position.coords.accuracy);
+
+              // Center the map on the user's location
               map.setCenter(pos);
 
-              // Optionally, display an info window at the user's location
-              // infoWindow.setContent("You are here.");
-              // infoWindow.open(map, userMarker);
+              // Show loading indicator when fetching restaurants
+              showLoading(true);
+
+              // Fetch and display nearby restaurants
+              fetchNearbyRestaurants(pos);
+
+              // Optionally, display an info window at the user's location on first position fix
+              if (!infoWindow.getMap()) {
+                infoWindow.setContent("You are here.");
+                infoWindow.open(map, userMarker);
+              }
             },
             (error) => {
               handleLocationError(true, infoWindow, map.getCenter(), error);
@@ -117,6 +134,64 @@
           // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter(), null);
         }
+      }
+
+      function fetchNearbyRestaurants(position) {
+        const request = {
+          location: new google.maps.LatLng(position.lat, position.lng),
+          radius: 1000, // Search within 1 kilometer
+          type: ['restaurant'],
+        };
+
+        placesService.nearbySearch(request, (results, status) => {
+          showLoading(false); // Hide loading indicator
+
+          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+            clearRestaurantMarkers(); // Remove existing markers
+            for (let i = 0; i < results.length; i++) {
+              createRestaurantMarker(results[i]);
+            }
+          } else {
+            console.error('PlacesService was not successful for the following reason: ' + status);
+          }
+        });
+      }
+
+      function createRestaurantMarker(place) {
+        if (!place.geometry || !place.geometry.location) return;
+
+        const marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location,
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            scaledSize: new google.maps.Size(32, 32),
+          },
+        });
+
+        // Add click listener to marker to show InfoWindow
+        google.maps.event.addListener(marker, 'click', () => {
+          const content = `
+            <div class="info-window">
+              <h3>${place.name}</h3>
+              <p>${place.vicinity}</p>
+              ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : ''}
+              <a href="${place.url}" target="_blank">View on Google Maps</a>
+            </div>
+          `;
+          infoWindow.setContent(content);
+          infoWindow.open(map, marker);
+        });
+
+        // Store marker so we can clear them later
+        restaurantMarkers.push(marker);
+      }
+
+      function clearRestaurantMarkers() {
+        for (let i = 0; i < restaurantMarkers.length; i++) {
+          restaurantMarkers[i].setMap(null);
+        }
+        restaurantMarkers = [];
       }
 
       function handleLocationError(
@@ -151,10 +226,23 @@
         infoWindow.open(map);
       }
 
+      function showLoading(show) {
+        const loadingDiv = document.getElementById('loading');
+        loadingDiv.style.display = show ? 'block' : 'none';
+      }
+
       // Optional: Stop tracking when the user leaves the page
       window.addEventListener("beforeunload", () => {
         if (watchId !== undefined) {
           navigator.geolocation.clearWatch(watchId);
+        }
+      });
+
+      // Optional: Handle map resize to keep the center accurate
+      window.addEventListener("resize", () => {
+        google.maps.event.trigger(map, "resize");
+        if (userMarker.getPosition()) {
+          map.setCenter(userMarker.getPosition());
         }
       });
     </script>
