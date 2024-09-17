@@ -1,25 +1,162 @@
+<!DOCTYPE html>
 <html>
   <head>
-    <title>Add a Map using HTML</title>
+    <title>Google Maps with Continuous Location Tracking</title>
+    <style>
+      /* Ensure the map has a defined size */
+      #map {
+        height: 100vh; /* Full viewport height */
+        width: 100%;
+      }
+
+      /* Style for the custom location button (optional) */
+      .custom-map-control-button {
+        background-color: #fff;
+        border: 2px solid #fff;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        margin: 10px;
+        padding: 0 12px;
+        font-size: 14px;
+        line-height: 40px;
+        color: #333;
+        text-align: center;
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
-    <gmp-map
-      center="37.4220656,-122.0840897"
-      zoom="10"
-      map-id="DEMO_MAP_ID"
-      style="height: 400px"
-    ></gmp-map>
+    <!-- Map container -->
+    <div id="map"></div>
 
-    <!--
-      The defer attribute causes the script to execute after the full HTML
-      document has been parsed. For non-blocking uses, avoiding race conditions,
-      and consistent behavior across browsers, consider loading using Promises. See
-      https://developers.google.com/maps/documentation/javascript/load-maps-js-api
-      for more information.
-      -->
+    <!-- Google Maps JavaScript API -->
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9Y17reV-j_GJXrsZ8_r5qssFG_iidaco&libraries=maps&v=beta"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAk29gOlWg8QN-M1itRXEEHcRwu9-8QcQk&callback=initMap&libraries=places"
+      async
       defer
     ></script>
+
+    <script>
+      let map, infoWindow, userMarker, watchId;
+
+      function initMap() {
+        // Initialize the map centered at a default location
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 37.4220656, lng: -122.0840897 }, // Default center (Googleplex)
+          zoom: 15,
+        });
+
+        infoWindow = new google.maps.InfoWindow();
+
+        // Initialize the user marker with a blue dot icon
+        userMarker = new google.maps.Marker({
+          map: map,
+          title: "Your Location",
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            fillColor: "#4285F4", // Google Blue
+            fillOpacity: 1,
+            strokeColor: "#ffffff",
+            strokeWeight: 2,
+          },
+        });
+
+        // Optional: Create the "Pan to Current Location" button
+        const locationButton = document.createElement("button");
+        locationButton.textContent = "Pan to Current Location";
+        locationButton.classList.add("custom-map-control-button");
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+
+        // Event listener for the location button
+        locationButton.addEventListener("click", () => {
+          if (userMarker.getPosition()) {
+            map.panTo(userMarker.getPosition());
+            map.setZoom(15); // Adjust zoom level as needed
+          } else {
+            infoWindow.setContent("Current location not available.");
+            infoWindow.setPosition(map.getCenter());
+            infoWindow.open(map);
+          }
+        });
+
+        // Start tracking the user's location
+        startTracking();
+      }
+
+      function startTracking() {
+        if (navigator.geolocation) {
+          // Watch the user's position continuously
+          watchId = navigator.geolocation.watchPosition(
+            (position) => {
+              const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+
+              // Update the user marker's position
+              userMarker.setPosition(pos);
+
+              // Optionally, center the map on the user's location
+              map.setCenter(pos);
+
+              // Optionally, display an info window at the user's location
+              // infoWindow.setContent("You are here.");
+              // infoWindow.open(map, userMarker);
+            },
+            (error) => {
+              handleLocationError(true, infoWindow, map.getCenter(), error);
+            },
+            {
+              enableHighAccuracy: true,
+              maximumAge: 0,
+              timeout: 5000,
+            }
+          );
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter(), null);
+        }
+      }
+
+      function handleLocationError(
+        browserHasGeolocation,
+        infoWindow,
+        pos,
+        error
+      ) {
+        let errorMessage = browserHasGeolocation
+          ? "Error: The Geolocation service failed."
+          : "Error: Your browser doesn't support geolocation.";
+
+        if (error) {
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "User denied the request for Geolocation.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "The request to get user location timed out.";
+              break;
+            case error.UNKNOWN_ERROR:
+              errorMessage = "An unknown error occurred.";
+              break;
+          }
+        }
+
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(errorMessage);
+        infoWindow.open(map);
+      }
+
+      // Optional: Stop tracking when the user leaves the page
+      window.addEventListener("beforeunload", () => {
+        if (watchId !== undefined) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+      });
+    </script>
   </body>
 </html>
