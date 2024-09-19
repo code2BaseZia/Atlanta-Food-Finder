@@ -36,25 +36,62 @@
 
     <!-- Map container -->
     <div id="map"></div>
+    <input id="autocomplete" placeholder="Enter a place" type="text" />
 
     <!-- Google Maps JavaScript API -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap&libraries=places"
-      async
+    <script async
+      src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&loading=async&libraries=places&callback=initAutocomplete&callback=initMap"
       defer
     ></script>
 
     <script>
       let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
       let restaurants, restaurantMarkers = [];
+      let autocomplete;
 
       function initMap() {
         // Initialize the map with a default center; this will be updated once the user's location is obtained
         map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
-          zoom: 17,
-            mapId: "4e0d254a4ffc45c6", // Customizes map display to only show restaurants
+          zoom: 17, 
+          mapId: "4e0d254a4ffc45c6", // Customizes map display to only show restaurants
+          mapTypeControl: false,
         });
+        // Define autocomplete and its options
+        const input = document.getElementById("autocomplete");
+        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
+        function initAutocomplete() {
+            autocomplete = new google.maps.places.Autocomplete(
+                document.getElementById('autocomplete'),
+                {
+                    types: ['restaurant'],
+                    componentRestrictions: {country: "us"},
+                    fields: ['geometry', 'name', 'vicinity', 'rating', 'photos']
+                });
+            autocomplete.bindTo("bounds",map);
+            autocomplete.addListener('place_changed', onPlaceChanged);
+        }
+        // Define behavior on a chosen autocomplete option
+        function onPlaceChanged() {
+            let place = autocomplete.getPlace();
+            
+            if (!place.geometry) {
+                document.getElementById('autocomplete').placeholder = 'Enter a place';
+            } else {
+                const content = `
+            <div class="info-window">
+               ${!place.photos ? '' : `<img alt="Restaurant Image" src="${place.photos[0].getUrl()}" width="20%" height="10%" > </img>` }
+              <h3>${place.name}</h3>
+              <p>${place.vicinity}</p>
+              ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : `<p>Rating Unavailable</p>`}
+              <a href="${place.url}" target="_blank">View on Google Maps</a>
+            </div>
+          `;
+                infoWindow.setContent(content);
+                infoWindow.setPosition(place.geometry.location);
+                infoWindow.open(map);
+            }
+        }
 
         infoWindow = new google.maps.InfoWindow();
 
@@ -87,8 +124,9 @@
         // Initialize the Places service
         placesService = new google.maps.places.PlacesService(map);
 
-        // Start tracking the user's location
+        // Start tracking the user's location & start autocomplete
         startTracking();
+        initAutocomplete();
       }
 
       function startTracking() {
@@ -113,8 +151,8 @@
 
               // Show loading indicator when fetching restaurants
               showLoading(true);
-
-              // Fetch and display nearby restaurants
+              
+              // Fetch restaurants
               fetchNearbyRestaurants(pos);
 
             },
@@ -134,26 +172,26 @@
       }
 
       function fetchNearbyRestaurants(position) {
-        const request = {
-          location: new google.maps.LatLng(position.lat, position.lng),
-          radius: 1000,
-          type: ['restaurant'],
-        };
+          const request = {
+              location: new google.maps.LatLng(position.lat, position.lng),
+              radius: 1000,
+              type: ['restaurant'],
+          };
 
-        placesService.nearbySearch(request, (results, status) => {
-          showLoading(false); // Hide loading indicator
+          placesService.nearbySearch(request, (results, status) => {
+              showLoading(false); // Hide loading indicator
 
-          if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-            restaurants = []; // Clear current restaurants
-            clearRestaurantMarkers();
-            for (let i = 0; i < results.length; i++) {
-              restaurants.push(results[i]); // Populate new restaurants to display details
-              createRestaurantMarker(results[i]); // Create new marker
-            }
-          } else {
-            console.error('PlacesService was not successful for the following reason: ' + status);
-          }
-        });
+              if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+                  restaurants = []; // Clear current restaurants
+                  clearRestaurantMarkers();
+                  for (let i = 0; i < results.length; i++) {
+                      restaurants.push(results[i]); // Populate new restaurants to display details
+                      createRestaurantMarker(results[i]); // Create new marker
+                  }
+              } else {
+                  console.error('PlacesService was not successful for the following reason: ' + status);
+              }
+          });
       }
 
         function createRestaurantMarker(place) {
@@ -227,7 +265,7 @@
         infoWindow.setContent(errorMessage);
         infoWindow.open(map);
       }
-
+      
       function showLoading(show) {
         const loadingDiv = document.getElementById('loading');
         loadingDiv.style.display = show ? 'block' : 'none';
