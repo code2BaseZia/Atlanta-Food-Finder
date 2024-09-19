@@ -1,4 +1,4 @@
-let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
+let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos;
       let restaurants, restaurantMarkers = [];
 
       async function initMap() {
@@ -11,11 +11,16 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
         });
         map.addListener("dragend", () => {
           console.log("drag");
-            restaurants = undefined;
+          if (true) {
+              fetchNearbyRestaurants(userPos);
+          }
       });
         map.addListener("resize", () => {
             console.log("resize");
-            restaurants = undefined;
+            if (true) {
+                fetchNearbyRestaurants(userPos);
+            }
+
         });
 
         infoWindow = new google.maps.InfoWindow();
@@ -50,7 +55,7 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
        const inputDiv = document.createElement('div');
        const input = document.createElement('input');
        input.id = 'search-input';
-       input.placeholder = 'Search for restaurants (e.g., "pizza")';
+       input.placeholder = 'Search for restaurants';
        inputDiv.appendChild(input);
        map.controls[google.maps.ControlPosition.TOP_CENTER].push(inputDiv);
 
@@ -79,6 +84,7 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
                 lng: position.coords.longitude,
               };
 
+              userPos = pos;
               // Update the user marker's position
               userMarker.setPosition(pos);
 
