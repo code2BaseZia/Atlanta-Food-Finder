@@ -3,19 +3,21 @@
   <head>
     <title>Atlanta Food Finder</title>
     <style>
-      /* Ensure the map has a defined size */
       #map {
-        height: 100vh; /* Full viewport height */
+        height: 100vh;
         width: 100%;
       }
 
-      /* Optional: Style for InfoWindows */
-      .info-window {
-        font-family: Arial, sans-serif;
-        font-size: 14px;
+      #search-input {
+        background-color: white;
+        border: 1px solid #d3d3d3;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        font-size: 16px;
+        padding: 10px;
+        width: 250px;
       }
 
-      /* Optional: Loading spinner */
       #loading {
         position: absolute;
         top: 10px;
@@ -31,268 +33,80 @@
     </style>
   </head>
   <body>
-    <!-- Loading Indicator -->
     <div id="loading">Loading nearby restaurants...</div>
-
-    <!-- Map container -->
     <div id="map"></div>
-    <input id="autocomplete" placeholder="Enter a place" type="text" />
 
-    <!-- Google Maps JavaScript API -->
-    <script async
-      src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&loading=async&libraries=places&callback=initAutocomplete&callback=initMap"
-      defer
-    ></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&libraries=places&callback=initMap" defer></script>
 
     <script>
-      let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
-      let restaurants, restaurantMarkers = [];
-      let autocomplete;
+      let map, infoWindow, userMarker, placesService, restaurantMarkers = [];
 
-      async function initMap() {
-        // Initialize the map with a default center; this will be updated once the user's location is obtained
+      function initMap() {
         map = new google.maps.Map(document.getElementById("map"), {
-          center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
+          center: { lat: 0, lng: 0 },
           zoom: 17,
-          mapId: "4e0d254a4ffc45c6", // Customizes map display to only show restaurants
-          mapTypeControl: false,
         });
-        map.addListener("dragend", () => {
-          console.log("drag");
-            restaurants = undefined;
-      });
-        map.addListener("resize", () => {
-            console.log("resize");
-            restaurants = undefined;
-        });
-        // Define autocomplete and its options
-        const input = document.getElementById("autocomplete");
-        map.controls[google.maps.ControlPosition.TOP_RIGHT].push(input);
-        function initAutocomplete() {
-            autocomplete = new google.maps.places.Autocomplete(
-                document.getElementById('autocomplete'),
-                {
-                    types: ['restaurant'],
-                    componentRestrictions: {country: "us"},
-                    fields: ['geometry', 'name', 'vicinity', 'rating', 'photos']
-                });
-            autocomplete.bindTo("bounds",map);
-            autocomplete.addListener('place_changed', onPlaceChanged);
-        }
-        // Define behavior on a chosen autocomplete option
-        function onPlaceChanged() {
-            let place = autocomplete.getPlace();
 
-            if (!place.geometry) {
-                document.getElementById('autocomplete').placeholder = 'Enter a place';
-            } else {
-                const content = `
-            <div class="info-window">
-               ${!place.photos ? '' : `<img alt="Restaurant Image" src="${place.photos[0].getUrl()}" width="20%" height="10%" > </img>` }
-              <h3>${place.name}</h3>
-              <p>${place.vicinity}</p>
-              ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : `<p>Rating Unavailable</p>`}
-              <a href="${place.url}" target="_blank">View on Google Maps</a>
-            </div>
-          `;
-                infoWindow.setContent(content);
-                infoWindow.setPosition(place.geometry.location);
-                infoWindow.open(map);
-            }
-        }
+        // Create the search input and position it at the top center
+        const inputDiv = document.createElement('div');
+        const input = document.createElement('input');
+        input.id = 'search-input';
+        input.placeholder = 'Search for restaurants (e.g., "pizza")';
+        inputDiv.appendChild(input);
+        map.controls[google.maps.ControlPosition.TOP_CENTER].push(inputDiv);
 
+        placesService = new google.maps.places.PlacesService(map);
         infoWindow = new google.maps.InfoWindow();
-
-
-        // Initialize the user marker with a blue dot icon
         userMarker = new google.maps.Marker({
           map: map,
-          title: "Your Location",
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            fillColor: "#4285F4", // Google Blue
-            fillOpacity: 1,
-            strokeColor: "#ffffff",
-            strokeWeight: 2,
-          },
+          icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2 },
         });
 
-        // Initialize the accuracy circle
-        accuracyCircle = new google.maps.Circle({
-          strokeColor: "#4285F4",
-          strokeOpacity: 0.4,
-          strokeWeight: 1,
-          fillColor: "#4285F4",
-          fillOpacity: 0.2,
-          map: map,
-          radius: 0, // Will be updated with accuracy
-        });
-
-        // Initialize the Places service
-        placesService = new google.maps.places.PlacesService(map);
-
-        // Start tracking the user's location & start autocomplete
-        startTracking();
-        initAutocomplete();
-      }
-
-      function startTracking() {
         if (navigator.geolocation) {
-          // Watch the user's position continuously
-          watchId = navigator.geolocation.watchPosition(
-            (position) => {
-              const pos = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude,
-              };
-
-              // Update the user marker's position
-              userMarker.setPosition(pos);
-
-              // Update the accuracy circle
-              accuracyCircle.setCenter(pos);
-              accuracyCircle.setRadius(position.coords.accuracy);
-
-              // Center the map on the user's location
-              map.setCenter(pos);
-
-              // Fetch restaurants as needed
-              if (!restaurants) {
-                  showLoading(true);
-                  fetchNearbyRestaurants(pos);
-              }
-
-            },
-            (error) => {
-              handleLocationError(true, infoWindow, map.getCenter(), error);
-            },
-            {
-              enableHighAccuracy: true,
-              maximumAge: 0,
-              timeout: 5000,
-            }
-          );
-        } else {
-          // Browser doesn't support Geolocation
-          handleLocationError(false, infoWindow, map.getCenter(), null);
-        }
-      }
-
-      function fetchNearbyRestaurants(position) {
-          const request = {
-              location: new google.maps.LatLng(position.lat, position.lng),
-              radius: (27-map.getZoom())*100,
-              type: ['restaurant'],
-          };
-          console.log(request.radius);
-          placesService.nearbySearch(request, (results, status) => {
-              showLoading(false); // Hide loading indicator
-
-              if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                  restaurants = []; // Clear current restaurants
-                  clearRestaurantMarkers();
-                  for (let i = 0; i < results.length; i++) {
-                      restaurants.push(results[i]); // Populate new restaurants to display details
-                      createRestaurantMarker(results[i]); // Create new marker
-                  }
-              } else {
-                  console.error('PlacesService was not successful for the following reason: ' + status);
-              }
+          navigator.geolocation.watchPosition((position) => {
+            const pos = { lat: position.coords.latitude, lng: position.coords.longitude };
+            userMarker.setPosition(pos);
+            map.setCenter(pos);
           });
+        }
+
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            const query = e.target.value;
+            if (query) searchPlacesByKeyword(query);
+          }
+        });
       }
 
-        function createRestaurantMarker(place) {
-        if (!place.geometry || !place.geometry.location) return;
+      function searchPlacesByKeyword(keyword) {
+        const request = { location: userMarker.getPosition(), radius: 1000, query: keyword };
+        placesService.textSearch(request, (results, status) => {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            clearMarkers();
+            results.forEach(createMarker);
+          }
+        });
+      }
 
-        const icon = {
-            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            scaledSize: new google.maps.Size(32, 32),
-          };
+      function createMarker(place) {
         const marker = new google.maps.Marker({
           map: map,
           position: place.geometry.location,
-          title: place.name,
-          icon: icon,
+          icon: { url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", scaledSize: new google.maps.Size(32, 32) },
         });
 
-        // Add click listener to marker to show InfoWindow
         google.maps.event.addListener(marker, 'click', () => {
-          const content = `
-            <div class="info-window">
-               ${!place.photos ? '' : `<img alt="Restaurant Image" src="${place.photos[0].getUrl()}" width="20%" height="10%" > </img>` }
-              <h3>${place.name}</h3>
-              <p>${place.vicinity}</p>
-              ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : `<p>Rating Unavailable</p>`}
-              <a href="${place.url}" target="_blank">View on Google Maps</a>
-            </div>
-          `;
-          infoWindow.setContent(content);
+          infoWindow.setContent(`<div><strong>${place.name}</strong><br>${place.vicinity}</div>`);
           infoWindow.open(map, marker);
         });
 
-        // Store marker so we can clear them later
         restaurantMarkers.push(marker);
       }
 
-      function clearRestaurantMarkers() {
-        for (let i = 0; i < restaurantMarkers.length; i++) {
-          restaurantMarkers[i].setMap(null);
-        }
+      function clearMarkers() {
+        restaurantMarkers.forEach(marker => marker.setMap(null));
         restaurantMarkers = [];
       }
-
-      function handleLocationError(
-        browserHasGeolocation,
-        infoWindow,
-        pos,
-        error
-      ) {
-        let errorMessage = browserHasGeolocation
-          ? "Error: The Geolocation service failed."
-          : "Error: Your browser doesn't support geolocation.";
-
-        if (error) {
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = "User denied the request for Geolocation.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = "Location information is unavailable.";
-              break;
-            case error.TIMEOUT:
-              errorMessage = "The request to get user location timed out.";
-              break;
-            case error.UNKNOWN_ERROR:
-              errorMessage = "An unknown error occurred.";
-              break;
-          }
-        }
-
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(errorMessage);
-        infoWindow.open(map);
-      }
-
-      function showLoading(show) {
-        const loadingDiv = document.getElementById('loading');
-        loadingDiv.style.display = show ? 'block' : 'none';
-      }
-
-      // Optional: Stop tracking when the user leaves the page
-      window.addEventListener("beforeunload", () => {
-        if (watchId !== undefined) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-      });
-
-      // Optional: Handle map resize to keep the center accurate
-      window.addEventListener("resize", () => {
-        google.maps.event.trigger(map, "resize");
-        if (userMarker.getPosition()) {
-          map.setCenter(userMarker.getPosition());
-        }
-      });
     </script>
   </body>
 </html>
