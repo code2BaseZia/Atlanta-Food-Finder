@@ -49,13 +49,21 @@
       let restaurants, restaurantMarkers = [];
       let autocomplete;
 
-      function initMap() {
+      async function initMap() {
         // Initialize the map with a default center; this will be updated once the user's location is obtained
         map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
-          zoom: 17, 
+          zoom: 17,
           mapId: "4e0d254a4ffc45c6", // Customizes map display to only show restaurants
           mapTypeControl: false,
+        });
+        map.addListener("dragend", () => {
+          console.log("drag");
+            restaurants = undefined;
+      });
+        map.addListener("resize", () => {
+            console.log("resize");
+            restaurants = undefined;
         });
         // Define autocomplete and its options
         const input = document.getElementById("autocomplete");
@@ -74,7 +82,7 @@
         // Define behavior on a chosen autocomplete option
         function onPlaceChanged() {
             let place = autocomplete.getPlace();
-            
+
             if (!place.geometry) {
                 document.getElementById('autocomplete').placeholder = 'Enter a place';
             } else {
@@ -149,11 +157,11 @@
               // Center the map on the user's location
               map.setCenter(pos);
 
-              // Show loading indicator when fetching restaurants
-              showLoading(true);
-              
-              // Fetch restaurants
-              fetchNearbyRestaurants(pos);
+              // Fetch restaurants as needed
+              if (!restaurants) {
+                  showLoading(true);
+                  fetchNearbyRestaurants(pos);
+              }
 
             },
             (error) => {
@@ -174,10 +182,10 @@
       function fetchNearbyRestaurants(position) {
           const request = {
               location: new google.maps.LatLng(position.lat, position.lng),
-              radius: 1000,
+              radius: (27-map.getZoom())*100,
               type: ['restaurant'],
           };
-
+          console.log(request.radius);
           placesService.nearbySearch(request, (results, status) => {
               showLoading(false); // Hide loading indicator
 
@@ -196,7 +204,7 @@
 
         function createRestaurantMarker(place) {
         if (!place.geometry || !place.geometry.location) return;
-        
+
         const icon = {
             url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
             scaledSize: new google.maps.Size(32, 32),
@@ -265,7 +273,7 @@
         infoWindow.setContent(errorMessage);
         infoWindow.open(map);
       }
-      
+
       function showLoading(show) {
         const loadingDiv = document.getElementById('loading');
         loadingDiv.style.display = show ? 'block' : 'none';
