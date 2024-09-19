@@ -29,20 +29,29 @@ function initMap() {
     });
   }
 
+  // Use addEventListener on the input element (DOM)
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       const query = e.target.value;
-      if (query) searchPlacesByKeyword(query);
+      if (query) searchNearbyPlaces(query);
     }
   });
 }
 
-function searchPlacesByKeyword(keyword) {
-  const request = { location: userMarker.getPosition(), radius: 1000, query: keyword };
-  placesService.textSearch(request, (results, status) => {
+function searchNearbyPlaces(keyword) {
+  const request = {
+    location: userMarker.getPosition(),  // User's current location
+    radius: 1000,  // Radius in meters (adjust as needed)
+    keyword: keyword,  // Search by keyword like 'pizza', 'coffee', etc.
+  };
+
+  // Use nearbySearch to search for places near the current location
+  placesService.nearbySearch(request, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       clearMarkers();
       results.forEach(createMarker);
+    } else {
+      console.error('PlacesService nearbySearch failed due to: ' + status);
     }
   });
 }
@@ -54,6 +63,7 @@ function createMarker(place) {
     icon: { url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", scaledSize: new google.maps.Size(32, 32) },
   });
 
+  // Use google.maps.event.addListener for Google Maps API events
   google.maps.event.addListener(marker, 'click', () => {
     infoWindow.setContent(`<div><strong>${place.name}</strong><br>${place.vicinity}</div>`);
     infoWindow.open(map, marker);
