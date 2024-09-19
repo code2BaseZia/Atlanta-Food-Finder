@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Google Maps with Continuous Location Tracking and Nearby Restaurants</title>
+    <title>Atlanta Food Finder</title>
     <style>
       /* Ensure the map has a defined size */
       #map {
@@ -46,16 +46,18 @@
 
     <script>
       let map, infoWindow, userMarker, watchId, accuracyCircle, placesService;
-      let restaurantMarkers = []; // To keep track of restaurant markers
+      let restaurants, restaurantMarkers = [];
 
       function initMap() {
         // Initialize the map with a default center; this will be updated once the user's location is obtained
         map = new google.maps.Map(document.getElementById("map"), {
           center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
-          zoom: 15,
+          zoom: 17,
+            mapId: "4e0d254a4ffc45c6", // Customizes map display to only show restaurants
         });
 
         infoWindow = new google.maps.InfoWindow();
+
 
         // Initialize the user marker with a blue dot icon
         userMarker = new google.maps.Marker({
@@ -115,11 +117,6 @@
               // Fetch and display nearby restaurants
               fetchNearbyRestaurants(pos);
 
-              // Optionally, display an info window at the user's location on first position fix
-              if (!infoWindow.getMap()) {
-                infoWindow.setContent("You are here.");
-                infoWindow.open(map, userMarker);
-              }
             },
             (error) => {
               handleLocationError(true, infoWindow, map.getCenter(), error);
@@ -139,7 +136,7 @@
       function fetchNearbyRestaurants(position) {
         const request = {
           location: new google.maps.LatLng(position.lat, position.lng),
-          radius: 1000, // Search within 1 kilometer
+          radius: 1000,
           type: ['restaurant'],
         };
 
@@ -147,9 +144,11 @@
           showLoading(false); // Hide loading indicator
 
           if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-            clearRestaurantMarkers(); // Remove existing markers
+            restaurants = []; // Clear current restaurants
+            clearRestaurantMarkers();
             for (let i = 0; i < results.length; i++) {
-              createRestaurantMarker(results[i]);
+              restaurants.push(results[i]); // Populate new restaurants to display details
+              createRestaurantMarker(results[i]); // Create new marker
             }
           } else {
             console.error('PlacesService was not successful for the following reason: ' + status);
@@ -157,25 +156,28 @@
         });
       }
 
-      function createRestaurantMarker(place) {
+        function createRestaurantMarker(place) {
         if (!place.geometry || !place.geometry.location) return;
-
+        
+        const icon = {
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+            scaledSize: new google.maps.Size(32, 32),
+          };
         const marker = new google.maps.Marker({
           map: map,
           position: place.geometry.location,
-          icon: {
-            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-            scaledSize: new google.maps.Size(32, 32),
-          },
+          title: place.name,
+          icon: icon,
         });
 
         // Add click listener to marker to show InfoWindow
         google.maps.event.addListener(marker, 'click', () => {
           const content = `
             <div class="info-window">
+               ${!place.photos ? '' : `<img alt="Restaurant Image" src="${place.photos[0].getUrl()}" width="20%" height="10%" > </img>` }
               <h3>${place.name}</h3>
               <p>${place.vicinity}</p>
-              ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : ''}
+              ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : `<p>Rating Unavailable</p>`}
               <a href="${place.url}" target="_blank">View on Google Maps</a>
             </div>
           `;
