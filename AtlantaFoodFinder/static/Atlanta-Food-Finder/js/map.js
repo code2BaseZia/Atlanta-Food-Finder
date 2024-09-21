@@ -1,5 +1,7 @@
 let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos;
-      let restaurants, restaurantMarkers = [];
+let restaurants, restaurantMarkers = [];
+// Variable for when position is updated to update rest. list
+let prevUserPos = null;
 
       async function initMap() {
         // Initialize the map with a default center; this will be updated once the user's location is obtained
@@ -9,19 +11,7 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos
           mapId: "4e0d254a4ffc45c6", // Customizes map display to only show restaurants
           mapTypeControl: false,
         });
-        map.addListener("dragend", () => {
-          console.log("drag");
-          if (true) {
-              fetchNearbyRestaurants(userPos);
-          }
-      });
-        map.addListener("resize", () => {
-            console.log("resize");
-            if (true) {
-                fetchNearbyRestaurants(userPos);
-            }
 
-        });
 
         infoWindow = new google.maps.InfoWindow();
 
@@ -65,8 +55,14 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos
               if (e.key === "Enter") {
                 const query = e.target.value;
               if (query) searchNearbyPlaces(query);
+              else if (!query) fetchNearbyRestaurants(userPos);
               }
             });
+              input.addEventListener("blur",  () => {
+                  const query = input.value;
+                  if (query) searchNearbyPlaces(query);
+                  else if (!query) fetchNearbyRestaurants(userPos);
+              })
         // Initialize the Places service
         placesService = new google.maps.places.PlacesService(map);
 
@@ -83,7 +79,7 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos
                 lat: position.coords.latitude,
                 lng: position.coords.longitude,
               };
-
+              prevUserPos = userPos;
               userPos = pos;
               // Update the user marker's position
               userMarker.setPosition(pos);
@@ -96,7 +92,7 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos
               map.setCenter(pos);
 
               // Fetch restaurants as needed
-              if (!restaurants) {
+              if (userPos != prevUserPos) {
                   showLoading(true);
                   fetchNearbyRestaurants(pos);
               }
@@ -117,48 +113,33 @@ let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos
         }
       }
       function searchNearbyPlaces(keyword) {
-  const request = {
+    const request = {
     location: userMarker.getPosition(),  // User's current location
     radius: 1000,  // Radius in meters (adjust as needed)
     keyword: keyword,  // Search by keyword like 'pizza', 'coffee', etc.
+    type: 'restaurant',
   };
 
   // Use nearbySearch to search for places near the current location
   placesService.nearbySearch(request, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-      clearMarkers();
-      results.forEach(createMarker);
+      clearRestaurantMarkers();
+      restaurants = [];
+      for (let i = 0; i < results.length; ++i) {
+          createRestaurantMarker(results[i]);
+          restaurants.push(results[i]);
+        }
     } else {
       console.error('PlacesService nearbySearch failed due to: ' + status);
     }
   });
 }
 
-function createMarker(place) {
-  const marker = new google.maps.Marker({
-    map: map,
-    position: place.geometry.location,
-    icon: { url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png", scaledSize: new google.maps.Size(32, 32) },
-  });
-
-  // Use google.maps.event.addListener for Google Maps API events
-  google.maps.event.addListener(marker, 'click', () => {
-    infoWindow.setContent(`<div><strong>${place.name}</strong><br>${place.vicinity}</div>`);
-    infoWindow.open(map, marker);
-  });
-
-  restaurantMarkers.push(marker);
-}
-
-function clearMarkers() {
-  restaurantMarkers.forEach(marker => marker.setMap(null));
-  restaurantMarkers = [];
-}
 
       function fetchNearbyRestaurants(position) {
           const request = {
               location: new google.maps.LatLng(position.lat, position.lng),
-              radius: (27-map.getZoom())*100,
+              radius: 1000,
               type: ['restaurant'],
           };
           console.log(request.radius);
