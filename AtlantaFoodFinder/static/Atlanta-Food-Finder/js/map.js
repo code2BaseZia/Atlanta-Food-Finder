@@ -58,11 +58,12 @@ let prevUserPos = null;
               else if (!query) fetchNearbyRestaurants(userPos);
               }
             });
-              input.addEventListener("blur",  () => {
-                  const query = input.value;
-                  if (query) searchNearbyPlaces(query);
-                  else if (!query) fetchNearbyRestaurants(userPos);
-              })
+            // If the user unselects the textbox, search what they put or clear search markers
+            input.addEventListener("blur",  () => {
+                const query = input.value;
+                if (query) searchNearbyPlaces(query);
+                else if (!query) fetchNearbyRestaurants(userPos);
+            })
         // Initialize the Places service
         placesService = new google.maps.places.PlacesService(map);
 
@@ -112,12 +113,13 @@ let prevUserPos = null;
           handleLocationError(false, infoWindow, map.getCenter(), null);
         }
       }
-      function searchNearbyPlaces(keyword) {
-    const request = {
-    location: userMarker.getPosition(),  // User's current location
-    radius: 1000,  // Radius in meters (adjust as needed)
-    keyword: keyword,  // Search by keyword like 'pizza', 'coffee', etc.
-    type: 'restaurant',
+    // Search function used for keyword search for searchbox
+    function searchNearbyPlaces(keyword) {
+        const request = {
+        location: userMarker.getPosition(),  // User's current location
+        radius: 1000,  // Radius in meters (adjust as needed)
+        keyword: keyword,  // Search by keyword like 'pizza', 'coffee', etc.
+        type: 'restaurant',
   };
 
   // Use nearbySearch to search for places near the current location
@@ -135,7 +137,7 @@ let prevUserPos = null;
   });
 }
 
-
+      // Search function used to find restaurants around user
       function fetchNearbyRestaurants(position) {
           const request = {
               location: new google.maps.LatLng(position.lat, position.lng),
@@ -158,7 +160,7 @@ let prevUserPos = null;
               }
           });
       }
-
+        // Create red pins at all found restaurants
         function createRestaurantMarker(place) {
         if (!place.geometry || !place.geometry.location) return;
 
