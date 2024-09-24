@@ -1,7 +1,10 @@
 let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos;
-let restaurants, restaurantMarkers = [];
+let restaurants, searchedRestaurants;
+let restaurantMarkers = [];
 // Variable for when position is updated to update rest. list
 let prevUserPos = null;
+let getNextPage;
+let keyTimer;
 
       async function initMap() {
         // Initialize the map with a default center; this will be updated once the user's location is obtained
@@ -51,19 +54,16 @@ let prevUserPos = null;
 
 
        // Use addEventListener on the input element (DOM)
-              input.addEventListener("keydown", (e) => {
-              if (e.key === "Enter") {
+              input.addEventListener("input", (e) => {
+                clearTimeout(keyTimer);
+                keyTimer = setTimeout( () => {
                 const query = e.target.value;
-              if (query) searchNearbyPlaces(query);
-              else if (!query) fetchNearbyRestaurants(userPos);
-              }
-            });
-            // If the user unselects the textbox, search what they put or clear search markers
-            input.addEventListener("blur",  () => {
-                const query = input.value;
                 if (query) searchNearbyPlaces(query);
-                else if (!query) fetchNearbyRestaurants(userPos);
-            })
+                else restaurants.forEach((restaurant) => {
+                  createRestaurantMarker(restaurant);
+              });
+              },500);
+            });
         // Initialize the Places service
         placesService = new google.maps.places.PlacesService(map);
 
@@ -71,7 +71,7 @@ let prevUserPos = null;
         startTracking();
       }
 
-      function startTracking() {
+      async function startTracking() {
         if (navigator.geolocation) {
           // Watch the user's position continuously
           watchId = navigator.geolocation.watchPosition(
@@ -93,7 +93,7 @@ let prevUserPos = null;
               map.setCenter(pos);
 
               // Fetch restaurants as needed
-              if (userPos != prevUserPos) {
+              if ((prevUserPos && (userPos.lat - prevUserPos.lat !== 0) && (userPos.lng - prevUserPos.lng !== 0)) || !prevUserPos) {
                   showLoading(true);
                   fetchNearbyRestaurants(pos);
               }
@@ -119,47 +119,69 @@ let prevUserPos = null;
         location: userMarker.getPosition(),  // User's current location
         radius: 1000,  // Radius in meters (adjust as needed)
         keyword: keyword,  // Search by keyword like 'pizza', 'coffee', etc.
-        type: 'restaurant',
+        types: ['restaurant', 'cafe', 'bar', 'food'],
+        rankPreference: google.maps.places.RankBy.DISTANCE,
   };
 
   // Use nearbySearch to search for places near the current location
   placesService.nearbySearch(request, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
+      clearSearchedRestaurants();
       clearRestaurantMarkers();
-      restaurants = [];
       for (let i = 0; i < results.length; ++i) {
           createRestaurantMarker(results[i]);
-          restaurants.push(results[i]);
+          searchedRestaurants.push(results[i]);
         }
     } else {
       console.error('PlacesService nearbySearch failed due to: ' + status);
     }
   });
 }
-
+      function clearRestaurants() {
+          restaurants = [];
+      }
+      function clearSearchedRestaurants() {
+          searchedRestaurants = [];
+      }
       // Search function used to find restaurants around user
       function fetchNearbyRestaurants(position) {
           const request = {
               location: new google.maps.LatLng(position.lat, position.lng),
               radius: 1000,
-              type: ['restaurant'],
+              types: ['restaurant', 'food', 'cafe', 'bar'],
+              rankPreference: google.maps.places.RankBy.DISTANCE,
           };
-          console.log(request.radius);
-          placesService.nearbySearch(request, (results, status) => {
-              showLoading(false); // Hide loading indicator
-
-              if (status === google.maps.places.PlacesServiceStatus.OK && results) {
-                  restaurants = []; // Clear current restaurants
-                  clearRestaurantMarkers();
-                  for (let i = 0; i < results.length; i++) {
-                      restaurants.push(results[i]); // Populate new restaurants to display details
-                      createRestaurantMarker(results[i]); // Create new marker
-                  }
-              } else {
+          clearRestaurants();
+          placesNearbyRestaurantSearch(request);
+      }
+      function placesNearbyRestaurantSearch(request) {
+          placesService.nearbySearch(request, (results, status, pagination) => {
+              if (status !== google.maps.places.PlacesServiceStatus.OK && !results) {
                   console.error('PlacesService was not successful for the following reason: ' + status);
               }
+                  if (pagination && pagination.hasNextPage) {
+                      getNextPage = () => {
+                          pagination.nextPage();
+                      };
+                  }
+                  populateRestaurants(results, pagination);
+                  if (!pagination.hasNextPage) {
+                      showLoading(false); // Hide loading indicator
+                      clearRestaurantMarkers();
+                      restaurants.forEach((restaurant) => {
+                          createRestaurantMarker(restaurant);
+                      });
+                  }
           });
       }
+        function populateRestaurants(results, pagination) {
+          for (let i = 0; i < results.length; i++) {
+              restaurants.push(results[i]); // Populate new restaurants to display details
+          }
+          if (getNextPage && pagination.hasNextPage) {
+              getNextPage();
+          }
+        }
         // Create red pins at all found restaurants
         function createRestaurantMarker(place) {
         if (!place.geometry || !place.geometry.location) return;
@@ -242,13 +264,5 @@ let prevUserPos = null;
       window.addEventListener("beforeunload", () => {
         if (watchId !== undefined) {
           navigator.geolocation.clearWatch(watchId);
-        }
-      });
-
-      // Optional: Handle map resize to keep the center accurate
-      window.addEventListener("resize", () => {
-        google.maps.event.trigger(map, "resize");
-        if (userMarker.getPosition()) {
-          map.setCenter(userMarker.getPosition());
         }
       });
