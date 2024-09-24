@@ -1,16 +1,11 @@
-from django.urls import path
+from django.urls import path, include
+from django.contrib.auth import views
 
-from . import views
-
-app_name = "atl_food_finder"
+from .views import SignUpView, LogInView, IndexView
 
 urlpatterns = [
-    path('', views.index_view, name='index'),
-    path('login/', views.login_view, name='login'),
-    path('signup/', views.signup_view, name='signup'),
-    path('map/', views.map_view, name='map'),
-    path('settings/', views.construction_view, name='settings'),
-    path('reviews/', views.construction_view, name='reviews'),
-    path('reset/', views.construction_view, name='reset'),
-    path('recover/', views.construction_view, name='recover')
+    path("signup/", SignUpView.as_view(), name="signup"),
+    path("login/", LogInView.as_view(), name="login"),
+    path("", IndexView.as_view(), name="home"),
+    path('', include('django.contrib.auth.urls')),
 ]
