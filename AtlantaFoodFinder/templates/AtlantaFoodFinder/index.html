@@ -29,9 +29,9 @@
                 </div>
                 <div class="flex-none">
                     <ul class="menu menu-horizontal px-1 gap-2 items-center">
-                        <li class="hidden sm:flex font-semibold"><a>Map</a></li>
-                        <li class="hidden sm:flex"><a class="btn btn-primary btn-ghost h-9 min-h-0">Log In</a></li>
-                        <li class="hidden sm:flex"><a class="btn btn-primary h-9 min-h-0">Sign Up</a></li>
+                        <li class="hidden sm:flex font-semibold"><a href="{% url 'atl_food_finder:index' %}">Map</a></li>
+                        <li class="hidden sm:flex"><a href="{% url 'atl_food_finder:login' %}" class="btn btn-primary btn-ghost h-9 min-h-0">Log In</a></li>
+                        <li class="hidden sm:flex"><a href="{% url 'atl_food_finder:signup' %}" class="btn btn-primary h-9 min-h-0">Sign Up</a></li>
                         <li class="hidden sm:flex">
                             <details class="dropdown dropdown-end">
                                 <summary class="after:hidden flex flex-row gap-1">
@@ -52,9 +52,9 @@
             </div>
             <div id="menu" class="sm:hidden bg-base-300 absolute inset-x-0 top-16 h-0 overflow-hidden z-50">
                 <ul class="menu menu-vertical px-2 gap-2 items-stretch">
-                    <li class="font-semibold"><a>Map</a></li>
-                    <li><a class="text-secondary active:!text-secondary">Log In</a></li>
-                    <li><a class="text-primary active:!text-primary">Sign Up</a></li>
+                    <li class="font-semibold"><a href="{% url 'atl_food_finder:index' %}">Map</a></li>
+                    <li><a class="text-secondary active:!text-secondary" href="{% url 'atl_food_finder:login' %}">Log In</a></li>
+                    <li><a class="text-primary active:!text-primary" href="{% url 'atl_food_finder:signup' %}">Sign Up</a></li>
                     <li><a>Account Settings</a></li>
                     <li><a>My Reviews</a></li>
                     <li><a class="text-error active:!text-error">Log Out</a></li>
