@@ -68,7 +68,27 @@
             </div>
         </nav>
         <main class="grow shrink overflow-hidden relative font-body">
-            <div id="loading" class="absolute">Loading nearby restaurants...</div>
+            <div id="messages" class="absolute inset-x-0 top-0 flex flex-col items-center pt-2">
+                <div id="loading" class="pb-2 z-50">
+                    <div class="card bg-base-100 shadow-xl text-center flex flex-row gap-2 p-2 h-10 z-50">
+                        <span class="loading loading-spinner loading-md"></span> Loading nearby restaurants...
+                    </div>
+                </div>
+                <div id="errorTemplate" class="pb-2 hidden z-50">
+                    <div class="card shadow-xl text-center flex flex-row gap-2 p-2 h-10 text-error bg-red-200">
+                        <svg class="feather-md">
+                            <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#alert-circle" />
+                        </svg>
+                        <span>${message}</span>
+                        <button class="btn btn-error btn-ghost min-h-0 h-6 min-w-0 px-1">
+                            <svg class="feather-sm">
+                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <!-- ERROR MESSAGES GO HERE -->
+            </div>
             <div id="map" class="size-full"></div>
             <div class="absolute top-4 left-4 flex flex-col gap-4">
                 <button class="btn btn-primary p-4 min-h-0 h-max rounded-full" onclick="toggleSearch()">
@@ -76,13 +96,11 @@
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#search" />
                     </svg>
                 </button>
-                {% if user.is_authenticated %}
-                    <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
-                        <svg class="feather-lg">
-                            <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
-                        </svg>
-                    </button>
-                {% endif %}
+                <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
+                    <svg class="feather-lg">
+                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
+                    </svg>
+                </button>
                 <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
                     <svg class="feather-lg">
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#settings" />
@@ -107,8 +125,8 @@
                 </button>
             </div>
             <div id="search" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
-                <div class="card-body">
-                    <label class="bg-base-200 input input-bordered input-secondary flex items-center gap-2">
+                <div class="card-body h-full p-0 pb-4">
+                    <label class="bg-base-200 input input-bordered input-secondary flex items-center shrink-0 gap-2 m-6 mb-2">
                         <input id="searchBar" type="text" class="grow" placeholder="Search..." />
                         <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0">
                             <svg class="feather-sm">
@@ -116,14 +134,37 @@
                             </svg>
                         </button>
                     </label>
+                    <ul id="results" class="grow w-full menu menu-vertical gap-2 overflow-scroll flex-nowrap px-6 scroll-shadow top">
+                        <!-- RESTAURANT RESULTS GO HERE -->
+                    </ul>
+                </div>
+            </div>
+            <div id="details" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
+                <figure>
+                    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Restaurant Image" />
+                    <button class="absolute top-4 left-4 btn btn-ghost min-h-0 min-w-0 size-10 p-2">
+                        <svg class="feather-md">
+                            <use href="./icons/feather-sprite.svg#x" />
+                        </svg>
+                    </button>
+                </figure>
+                <div class="card-body h-full justify-start bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
+                    <h2 class="card-title grow-0">${ results[i].name }</h2>
+                    <p class="grow-0">${ results[i].vicinity }</p>
+                    <p class="flex flex-row gap-1 grow-0">Rating: ${results[i].rating}⭐</p>
+                    <a class="grow-0 link link-accent transition-colors" href="${results[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
                 </div>
             </div>
         </main>
 
         <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-        <script src="{% static 'AtlantaFoodFinder/js/jquery-3.7.1.min.js' %}"></script>
-        <script src="{% static 'AtlantaFoodFinder/js/index.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/menu.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/loading.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/error.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/location.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/map.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/search.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/shadow.js' %}"></script>
 
         <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9Y17reV-j_GJXrsZ8_r5qssFG_iidaco&libraries=places&callback=initMap" defer></script>
     </body>
