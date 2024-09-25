@@ -68,7 +68,15 @@
             </div>
         </nav>
         <main class="grow shrink overflow-hidden relative font-body">
-            <div id="loading" class="absolute">Loading nearby restaurants...</div>
+            <div class="absolute inset-x-0 top-0 flex flex-col gap-2 items-center">
+                <div id="loading" class="card bg-base-100 shadow-xl text-center flex flex-row gap-2 p-2 mt-2 z-50">
+                    <span class="loading loading-spinner loading-md"></span> Loading nearby restaurants...
+                </div>
+                <div id="error" class="card shadow-xl text-center hidden flex-row gap-2 p-2 mt-2 z-50 text-error bg-red-200">
+                    <svg class="feather-md"><use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#alert-circle" /></svg>
+                    <span>Message</span>
+                </div>
+            </div>
             <div id="map" class="size-full"></div>
             <div class="absolute top-4 left-4 flex flex-col gap-4">
                 <button class="btn btn-primary p-4 min-h-0 h-max rounded-full" onclick="toggleSearch()">
@@ -76,13 +84,11 @@
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#search" />
                     </svg>
                 </button>
-                {% if user.is_authenticated %}
-                    <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
-                        <svg class="feather-lg">
-                            <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
-                        </svg>
-                    </button>
-                {% endif %}
+                <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
+                    <svg class="feather-lg">
+                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
+                    </svg>
+                </button>
                 <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
                     <svg class="feather-lg">
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#settings" />
@@ -107,8 +113,8 @@
                 </button>
             </div>
             <div id="search" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
-                <div class="card-body">
-                    <label class="bg-base-200 input input-bordered input-secondary flex items-center gap-2">
+                <div class="card-body h-full p-0 pb-4">
+                    <label class="bg-base-200 input input-bordered input-secondary flex items-center shrink-0 gap-2 m-6 mb-2">
                         <input id="searchBar" type="text" class="grow" placeholder="Search..." />
                         <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0">
                             <svg class="feather-sm">
@@ -116,6 +122,9 @@
                             </svg>
                         </button>
                     </label>
+                    <ul id="results" class="grow w-full menu menu-vertical gap-2 overflow-scroll flex-nowrap px-6 scroll-shadow top">
+                        <!-- RESTAURANT RESULTS GO HERE -->
+                    </ul>
                 </div>
             </div>
         </main>
@@ -124,6 +133,7 @@
         <script src="{% static 'AtlantaFoodFinder/js/jquery-3.7.1.min.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/index.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/map.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/shadow.js' %}"></script>
 
         <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9Y17reV-j_GJXrsZ8_r5qssFG_iidaco&libraries=places&callback=initMap" defer></script>
     </body>

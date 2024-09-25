@@ -133,9 +133,28 @@ function searchNearbyPlaces(keyword) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       clearSearchedRestaurants();
       clearRestaurantMarkers();
+
+      const container = document.getElementById('results');
+
       for (let i = 0; i < results.length; ++i) {
         createRestaurantMarker(results[i]);
         searchedRestaurants.push(results[i]);
+
+        const item = document.createElement('li');
+        console.log(results[i]);
+        item.innerHTML = `
+            <div class="card image-full card-compact p-0 gap-0">
+                ${ results[i].photos ? `<figure><img src="${results[i].photos[0].getUrl()}" alt="Restaurant Image" /></figure>` : '' }
+                <div class="card-body h-full justify-center bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
+                    <h2 class="card-title grow-0">${ results[i].name }</h2>
+                    <p class="grow-0">${ results[i].vicinity }</p>
+                    ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0">Rating: ${results[i].rating}⭐</p>` : '<p class="grow-0">No Rating</p>' }
+                    <a class="grow-0" href="${results[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+                </div>
+            </div>
+        `.trim();
+
+        container.appendChild(item);
       }
     } else {
       console.error('PlacesService nearbySearch failed due to: ' + status);
@@ -147,6 +166,8 @@ function clearRestaurants() {
 }
 function clearSearchedRestaurants() {
     searchedRestaurants = [];
+    const container = document.getElementById('results');
+    container.innerHTML = '';
 }
 // Search function used to find restaurants around user
 function fetchNearbyRestaurants(position) {
@@ -262,7 +283,7 @@ function handleLocationError(
 
 function showLoading(show) {
   const loadingDiv = document.getElementById('loading');
-  loadingDiv.style.display = show ? 'block' : 'none';
+  loadingDiv.style.display = show ? 'flex' : 'none';
 }
 
 // Optional: Stop tracking when the user leaves the page
