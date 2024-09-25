@@ -1,4 +1,4 @@
-let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, restaurants, getNextPage;
+let map, infoWindow, userMarker, watchId, accuracyCircle, restaurants, getNextPage;
 let restaurantMarkers = [];
 let centeredOnce = false;
 
@@ -63,9 +63,8 @@ function clearRestaurants() {
 function fetchNearbyRestaurants(position) {
     const request = {
         location: new google.maps.LatLng(position.lat, position.lng),
-        radius: 1000,
         types: ['restaurant', 'food', 'cafe', 'bar'],
-        rankPreference: google.maps.places.RankBy.DISTANCE,
+        rankBy: google.maps.places.RankBy.DISTANCE,
     };
     clearRestaurants();
     placesNearbyRestaurantSearch(request);

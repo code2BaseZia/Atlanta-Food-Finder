@@ -1,4 +1,4 @@
-let prevUserPos, userPos;
+let prevUserPos;
 
 function handleLocationError(
   browserHasGeolocation,
@@ -54,7 +54,8 @@ async function startTracking() {
         accuracyCircle.setRadius(position.coords.accuracy);
 
         // Fetch restaurants as needed
-        if ((prevUserPos && (userPos.lat - prevUserPos.lat !== 0) && (userPos.lng - prevUserPos.lng !== 0)) || !prevUserPos) {
+        let locationUpdate = prevUserPos && (userPos.lat - prevUserPos.lat !== 0) && (userPos.lng - prevUserPos.lng !== 0);
+        if ((locationUpdate && !input.value) || !prevUserPos) {
             showLoading();
             fetchNearbyRestaurants(pos);
         }
