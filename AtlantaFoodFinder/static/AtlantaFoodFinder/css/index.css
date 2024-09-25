@@ -3341,6 +3341,28 @@ details.collapse summary::-webkit-details-marker {
   isolation: isolate;
 }
 
+@supports (color:color-mix(in oklab,black,black)) {
+  @media (hover:hover) {
+    .link-accent:hover {
+      color: color-mix(in oklab,var(--fallback-a,oklch(var(--a)/1)) 80%,black);
+    }
+
+    .link-neutral:hover {
+      color: color-mix(in oklab,var(--fallback-n,oklch(var(--n)/1)) 80%,black);
+    }
+  }
+}
+
+.link-accent {
+  --tw-text-opacity: 1;
+  color: var(--fallback-a,oklch(var(--a)/var(--tw-text-opacity)));
+}
+
+.link-neutral {
+  --tw-text-opacity: 1;
+  color: var(--fallback-n,oklch(var(--n)/var(--tw-text-opacity)));
+}
+
 .link:focus {
   outline: 2px solid transparent;
   outline-offset: 2px;
@@ -5272,6 +5294,11 @@ details.collapse summary::-webkit-details-marker {
   height: 100%;
 }
 
+.size-10 {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .h-0 {
   height: 0px;
 }
@@ -5332,6 +5359,10 @@ details.collapse summary::-webkit-details-marker {
 
 .min-h-0 {
   min-height: 0px;
+}
+
+.min-h-full {
+  min-height: 100%;
 }
 
 .w-4 {
@@ -5808,6 +5839,10 @@ details.collapse summary::-webkit-details-marker {
   padding-bottom: 0.375rem;
 }
 
+.pb-2 {
+  padding-bottom: 0.5rem;
+}
+
 .pb-3 {
   padding-bottom: 0.75rem;
 }
@@ -6139,6 +6174,20 @@ details[open] summary svg {
 @supports (color: oklch(0% 0 0)) {
   .btn-ghost.btn-secondary {
     color: var(--fallback-s,oklch(var(--s)));
+  }
+}
+
+@media (hover: hover) {
+  @supports (color: oklch(0% 0 0)) {
+    .btn-ghost.btn-error:hover {
+      background-color: var(--fallback-s,oklch(var(--er)/0.3));
+    }
+  }
+}
+
+@supports (color: oklch(0% 0 0)) {
+  .btn-ghost.btn-error {
+    color: var(--fallback-s,oklch(var(--er)));
   }
 }
 

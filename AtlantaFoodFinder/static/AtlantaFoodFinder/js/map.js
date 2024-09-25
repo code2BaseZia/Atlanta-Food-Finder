@@ -1,10 +1,5 @@
-let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, userPos;
-let restaurants, searchedRestaurants;
+let map, infoWindow, userMarker, watchId, accuracyCircle, placesService, restaurants, getNextPage;
 let restaurantMarkers = [];
-// Variable for when position is updated to update rest. list
-let prevUserPos = null;
-let getNextPage;
-let keyTimer;
 let centeredOnce = false;
 
 async function initMap() {
@@ -27,7 +22,6 @@ async function initMap() {
   });
 
   infoWindow = new google.maps.InfoWindow();
-
 
   // Initialize the user marker with a blue dot icon
   userMarker = new google.maps.Marker({
@@ -54,121 +48,17 @@ async function initMap() {
     radius: 0, // Will be updated with accuracy
   });
 
-  const input = document.getElementById('searchBar');
-
-  // Use addEventListener on the input element (DOM)
-  input.addEventListener("input", (e) => {
-    clearTimeout(keyTimer);
-    keyTimer = setTimeout( () => {
-      const query = e.target.value;
-      if (query) searchNearbyPlaces(query);
-      else restaurants.forEach((restaurant) => {
-        createRestaurantMarker(restaurant);
-      });
-      },500);
-  });
   // Initialize the Places service
   placesService = new google.maps.places.PlacesService(map);
 
   // Start tracking the user's location & start autocomplete
-  startTracking();
+  await startTracking();
 }
 
-async function startTracking() {
-  if (navigator.geolocation) {
-    // Watch the user's position continuously
-    watchId = navigator.geolocation.watchPosition(
-      (position) => {
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        prevUserPos = userPos;
-        userPos = pos;
-        // Update the user marker's position
-        userMarker.setPosition(pos);
-
-        if (!centeredOnce) {
-          reCenter();
-          centeredOnce = true;
-        }
-
-        // Update the accuracy circle
-        accuracyCircle.setCenter(pos);
-        accuracyCircle.setRadius(position.coords.accuracy);
-
-        // Fetch restaurants as needed
-        if ((prevUserPos && (userPos.lat - prevUserPos.lat !== 0) && (userPos.lng - prevUserPos.lng !== 0)) || !prevUserPos) {
-            showLoading(true);
-            fetchNearbyRestaurants(pos);
-        }
-
-      },
-      (error) => {
-        handleLocationError(true, infoWindow, map.getCenter(), error);
-      },
-      {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 5000,
-      }
-    );
-  } else {
-    // Browser doesn't support Geolocation
-    handleLocationError(false, infoWindow, map.getCenter(), null);
-  }
-}
-// Search function used for keyword search for searchbox
-function searchNearbyPlaces(keyword) {
-  const request = {
-    location: userMarker.getPosition(),  // User's current location
-    radius: 1000,  // Radius in meters (adjust as needed)
-    keyword: keyword,  // Search by keyword like 'pizza', 'coffee', etc.
-    types: ['restaurant', 'cafe', 'bar', 'food'],
-    rankPreference: google.maps.places.RankBy.DISTANCE,
-  };
-
-  // Use nearbySearch to search for places near the current location
-  placesService.nearbySearch(request, (results, status) => {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      clearSearchedRestaurants();
-      clearRestaurantMarkers();
-
-      const container = document.getElementById('results');
-
-      for (let i = 0; i < results.length; ++i) {
-        createRestaurantMarker(results[i]);
-        searchedRestaurants.push(results[i]);
-
-        const item = document.createElement('li');
-        console.log(results[i]);
-        item.innerHTML = `
-            <div class="card image-full card-compact p-0 gap-0">
-                ${ results[i].photos ? `<figure><img src="${results[i].photos[0].getUrl()}" alt="Restaurant Image" /></figure>` : '' }
-                <div class="card-body h-full justify-center bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
-                    <h2 class="card-title grow-0">${ results[i].name }</h2>
-                    <p class="grow-0">${ results[i].vicinity }</p>
-                    ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0">Rating: ${results[i].rating}⭐</p>` : '<p class="grow-0">No Rating</p>' }
-                    <a class="grow-0" href="${results[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
-                </div>
-            </div>
-        `.trim();
-
-        container.appendChild(item);
-      }
-    } else {
-      console.error('PlacesService nearbySearch failed due to: ' + status);
-    }
-  });
-}
 function clearRestaurants() {
     restaurants = [];
 }
-function clearSearchedRestaurants() {
-    searchedRestaurants = [];
-    const container = document.getElementById('results');
-    container.innerHTML = '';
-}
+
 // Search function used to find restaurants around user
 function fetchNearbyRestaurants(position) {
     const request = {
@@ -180,6 +70,7 @@ function fetchNearbyRestaurants(position) {
     clearRestaurants();
     placesNearbyRestaurantSearch(request);
 }
+
 function placesNearbyRestaurantSearch(request) {
     placesService.nearbySearch(request, (results, status, pagination) => {
         if (status !== google.maps.places.PlacesServiceStatus.OK && !results) {
@@ -192,7 +83,7 @@ function placesNearbyRestaurantSearch(request) {
             }
             populateRestaurants(results, pagination);
             if (!pagination.hasNextPage) {
-                showLoading(false); // Hide loading indicator
+                hideLoading() // Hide loading indicator
                 clearRestaurantMarkers();
                 restaurants.forEach((restaurant) => {
                     createRestaurantMarker(restaurant);
@@ -247,43 +138,6 @@ function clearRestaurantMarkers() {
     restaurantMarkers[i].setMap(null);
   }
   restaurantMarkers = [];
-}
-
-function handleLocationError(
-  browserHasGeolocation,
-  infoWindow,
-  pos,
-  error
-) {
-  let errorMessage = browserHasGeolocation
-    ? "Error: The Geolocation service failed."
-    : "Error: Your browser doesn't support geolocation.";
-
-  if (error) {
-    switch (error.code) {
-      case error.PERMISSION_DENIED:
-        errorMessage = "User denied the request for Geolocation.";
-        break;
-      case error.POSITION_UNAVAILABLE:
-        errorMessage = "Location information is unavailable.";
-        break;
-      case error.TIMEOUT:
-        errorMessage = "The request to get user location timed out.";
-        break;
-      case error.UNKNOWN_ERROR:
-        errorMessage = "An unknown error occurred.";
-        break;
-    }
-  }
-
-  infoWindow.setPosition(pos);
-  infoWindow.setContent(errorMessage);
-  infoWindow.open(map);
-}
-
-function showLoading(show) {
-  const loadingDiv = document.getElementById('loading');
-  loadingDiv.style.display = show ? 'flex' : 'none';
 }
 
 // Optional: Stop tracking when the user leaves the page
