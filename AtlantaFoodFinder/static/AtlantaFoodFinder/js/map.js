@@ -116,17 +116,7 @@ function placesNearbyRestaurantSearch(request) {
 
   // Add click listener to marker to show InfoWindow
   google.maps.event.addListener(marker, 'click', () => {
-    const content = `
-      <div class="info-window">
-         ${!place.photos ? '' : `<img alt="Restaurant Image" src="${place.photos[0].getUrl()}" width="20%" height="10%" > </img>` }
-        <h3>${place.name}</h3>
-        <p>${place.vicinity}</p>
-        ${place.rating ? `<p>Rating: ${place.rating} ⭐️</p>` : `<p>Rating Unavailable</p>`}
-        <a href="${place.url}" target="_blank">View on Google Maps</a>
-      </div>
-    `;
-    infoWindow.setContent(content);
-    infoWindow.open(map, marker);
+    showDetails(place);
   });
 
   // Store marker so we can clear them later

@@ -13,6 +13,11 @@ function toggleSearch() {
     }
 }
 
+function hideSearch() {
+    showSearch = false;
+    gsap.to('#search', { xPercent: 120, duration: 0.25, ease: 'power1.in' });
+}
+
 // Search function used for keyword search for searchbox
 function searchNearbyPlaces(keyword) {
   const request = {
@@ -44,7 +49,7 @@ function searchNearbyPlaces(keyword) {
                     <h2 class="card-title grow-0">${ results[i].name }</h2>
                     <p class="grow-0">${ results[i].vicinity }</p>
                     ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0">Rating: ${results[i].rating}⭐</p>` : '<p class="grow-0">No Rating</p>' }
-                    <a class="grow-0" href="${results[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+                    <a class="grow-0 link link-accent" href="${results[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
                 </div>
             </div>
         `.trim();

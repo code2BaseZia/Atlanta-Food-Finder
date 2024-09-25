@@ -69,12 +69,12 @@
         </nav>
         <main class="grow shrink overflow-hidden relative font-body">
             <div id="messages" class="absolute inset-x-0 top-0 flex flex-col items-center pt-2">
-                <div id="loading" class="pb-2 z-50">
-                    <div class="card bg-base-100 shadow-xl text-center flex flex-row gap-2 p-2 h-10 z-50">
+                <div id="loading" class="pb-2 z-40">
+                    <div class="card bg-base-100 shadow-xl text-center flex flex-row gap-2 p-2 h-10">
                         <span class="loading loading-spinner loading-md"></span> Loading nearby restaurants...
                     </div>
                 </div>
-                <div id="errorTemplate" class="pb-2 hidden z-50">
+                <div id="errorTemplate" class="pb-2 hidden z-40">
                     <div class="card shadow-xl text-center flex flex-row gap-2 p-2 h-10 text-error bg-red-200">
                         <svg class="feather-md">
                             <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#alert-circle" />
@@ -142,7 +142,7 @@
             <div id="details" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
                 <figure>
                     <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Restaurant Image" />
-                    <button class="absolute top-4 left-4 btn btn-ghost min-h-0 min-w-0 size-10 p-2">
+                    <button class="absolute top-4 left-4 btn btn-ghost min-h-0 min-w-0 size-10 p-2" onclick="hideDetails()">
                         <svg class="feather-md">
                             <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
                         </svg>
@@ -164,6 +164,7 @@
         <script src="{% static 'AtlantaFoodFinder/js/location.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/map.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/search.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/details.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/shadow.js' %}"></script>
 
         <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD9Y17reV-j_GJXrsZ8_r5qssFG_iidaco&libraries=places&callback=initMap" defer></script>

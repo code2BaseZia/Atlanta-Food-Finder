@@ -28,14 +28,13 @@ class ErrorDisplay {
 
     out() {
         clearTimeout(this.timeout);
+        setTimeout(() => display.removeChild(this.element), 500)
         gsap.to(this.element, {
             opacity: 0,
             y: 25,
             scale: 0.8,
             height: 0,
-            ease: 'power2.in',
-            onComplete: () => display.removeChild(this.element),
-            callbackScope: this
+            ease: 'power2.in'
         });
     }
 }
