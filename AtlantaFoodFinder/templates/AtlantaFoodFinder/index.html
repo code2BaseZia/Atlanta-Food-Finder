@@ -97,7 +97,7 @@
                     </svg>
                 </button>
                 <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
-                    <svg class="feather-lg">
+                    <svg class="feather-lg" id="star">
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
                     </svg>
                 </button>
@@ -140,8 +140,8 @@
                 </div>
             </div>
             <div id="details" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
-                <figure>
-                    <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Restaurant Image" />
+                <figure class="max-h-60">
+                    <img src="{% static 'AtlantaFoodFinder/images/placeholder.jpg' %}" alt="Restaurant Image" />
                     <button class="absolute top-4 left-4 btn btn-ghost min-h-0 min-w-0 size-10 p-2" onclick="hideDetails()">
                         <svg class="feather-md">
                             <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
@@ -149,10 +149,37 @@
                     </button>
                 </figure>
                 <div class="card-body h-full justify-start bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
-                    <h2 class="card-title grow-0">${ results[i].name }</h2>
-                    <p class="grow-0">${ results[i].vicinity }</p>
-                    <p class="flex flex-row gap-1 grow-0">Rating: ${results[i].rating}⭐</p>
-                    <a class="grow-0 link link-accent transition-colors" href="${results[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+                    <h2 class="card-title grow-0"></h2>
+                    <p class="address grow-0"></p>
+                    <div class="flex flex-row justify-between">
+                        <p class="rating grow-0 flex flex-row gap-2 items-center">
+                            <span class="number"></span>
+                            <span class="stars flex flex-row gap-0 items-center"></span>
+                        </p>
+                        <p class="open grow-0"></p>
+                    </div>
+                    <a class="grow-0 link link-accent transition-colors mb-4" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+                    <div class="collapse transition-all collapse-arrow bg-base-200">
+                        <input type="radio" name="my-accordion" checked="checked" />
+                        <div class="collapse-title text-xl font-medium">Info</div>
+                        <div class="collapse-content">
+                            <p>hello</p>
+                        </div>
+                    </div>
+                    <div class="collapse transition-all collapse-arrow bg-base-200">
+                        <input type="radio" name="my-accordion" />
+                        <div class="collapse-title text-xl font-medium">Contact</div>
+                        <div class="collapse-content">
+                            <p>hello</p>
+                        </div>
+                    </div>
+                    <div class="collapse transition-all collapse-arrow bg-base-200">
+                        <input type="radio" name="my-accordion" />
+                        <div class="collapse-title text-xl font-medium">Reviews</div>
+                        <div class="collapse-content">
+                            <p>hello</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>

@@ -1,5 +1,4 @@
 let keyTimer, searchedRestaurants, filteredRestaurants, sortedRestaurants;
-let showSearch = false;
 
 // All parameters for filters
 let filter = {
@@ -23,16 +22,14 @@ gsap.set('#search', { xPercent: 120 });
 function toggleSearch() {
     showSearch = !showSearch;
     if (showSearch) {
+        if (details) {
+            hideDetails();
+        }
         gsap.set('#search', { xPercent: 0 });
         gsap.from('#search', { xPercent: 120, duration: 0.25, ease: 'power1.out' });
     } else {
         gsap.to('#search', { xPercent: 120, duration: 0.25, ease: 'power1.in' });
     }
-}
-
-function hideSearch() {
-    showSearch = false;
-    gsap.to('#search', { xPercent: 120, duration: 0.25, ease: 'power1.in' });
 }
 
 // Search function used for keyword search for searchbox
@@ -103,19 +100,27 @@ function updateViews() {
         createRestaurantMarker(sortedRestaurants[i]);
         searchedRestaurants.push(sortedRestaurants[i]);
 
-        const item = document.createElement('li');
         console.log(sortedRestaurants[i]);
+
+        const item = document.createElement('li');
         item.innerHTML = `
             <div class="card image-full card-compact p-0 gap-0">
                 ${ sortedRestaurants[i].photos ? `<figure><img src="${sortedRestaurants[i].photos[0].getUrl()}" alt="Restaurant Image" /></figure>` : '' }
-                <div class="card-body h-full justify-center bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
+                <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
                     <h2 class="card-title grow-0">${ sortedRestaurants[i].name }</h2>
+                    <p class="grow-0 ${ sortedRestaurants[i].opening_hours.open_now ? 'text-success' : 'text-error' }">${ sortedRestaurants[i].opening_hours.open_now ? 'Open' : 'Closed' }</p>
                     <p class="grow-0">${ sortedRestaurants[i].vicinity }</p>
-                    ${ sortedRestaurants[i].rating ? `<p class="flex flex-row gap-1 grow-0">Rating: ${sortedRestaurants[i].rating}⭐</p>` : '<p class="grow-0">No Rating</p>' }
-                    <a class="grow-0 link link-accent" href="${sortedRestaurants[i].url}" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
+                    ${ sortedRestaurants[i].rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
+                        Rating: ${sortedRestaurants[i].rating}
+                        ${star.outerHTML}
+                    </p>` : '<p class="grow-0">No Rating</p>' }
                 </div>
             </div>
         `.trim();
+
+        item.addEventListener('click', () => {
+            showDetails(sortedRestaurants[i]);
+        });
 
         container.appendChild(item);
       }

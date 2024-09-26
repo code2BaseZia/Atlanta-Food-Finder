@@ -138,6 +138,7 @@ window.addEventListener("beforeunload", () => {
 
 function reCenter() {
   map.setCenter(userMarker.position);
+  map.setZoom(17);
 }
 
 function zoom(delta) {

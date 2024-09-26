@@ -5209,6 +5209,10 @@ details.collapse summary::-webkit-details-marker {
   margin-bottom: 0.5rem;
 }
 
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
 .ml-3 {
   margin-left: 0.75rem;
 }
@@ -5269,6 +5273,11 @@ details.collapse summary::-webkit-details-marker {
   display: none;
 }
 
+.size-10 {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .size-3 {
   width: 0.75rem;
   height: 0.75rem;
@@ -5294,11 +5303,6 @@ details.collapse summary::-webkit-details-marker {
   height: 100%;
 }
 
-.size-10 {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
 .h-0 {
   height: 0px;
 }
@@ -5321,6 +5325,10 @@ details.collapse summary::-webkit-details-marker {
 
 .h-6 {
   height: 1.5rem;
+}
+
+.h-72 {
+  height: 18rem;
 }
 
 .h-8 {
@@ -5355,6 +5363,14 @@ details.collapse summary::-webkit-details-marker {
 
 .max-h-14 {
   max-height: 3.5rem;
+}
+
+.max-h-60 {
+  max-height: 15rem;
+}
+
+.max-h-96 {
+  max-height: 24rem;
 }
 
 .min-h-0 {
@@ -5758,8 +5774,16 @@ details.collapse summary::-webkit-details-marker {
   --tw-bg-opacity: 0.5;
 }
 
+.fill-accent {
+  fill: var(--fallback-a,oklch(var(--a)/1));
+}
+
 .fill-none {
   fill: none;
+}
+
+.stroke-accent {
+  stroke: var(--fallback-a,oklch(var(--a)/1));
 }
 
 .stroke-current {
@@ -5985,6 +6009,11 @@ details.collapse summary::-webkit-details-marker {
 .text-secondary {
   --tw-text-opacity: 1;
   color: var(--fallback-s,oklch(var(--s)/var(--tw-text-opacity)));
+}
+
+.text-success {
+  --tw-text-opacity: 1;
+  color: var(--fallback-su,oklch(var(--su)/var(--tw-text-opacity)));
 }
 
 .text-white {
@@ -6214,6 +6243,17 @@ details[open] ul {
           mask-image: linear-gradient(180deg,#000 calc(100% - 40px),transparent);
 }
 
+.collapse {
+  transition: flex-grow 0.25s ease;
+  grid-template-rows: 3.75rem 0fr;
+  flex-grow: 0;
+}
+
+.collapse:not(.collapse-close):has(> input[type="checkbox"]:checked), .collapse:not(.collapse-close):has(> input[type="radio"]:checked) {
+  grid-template-rows: 3.75rem 1fr;
+  flex-grow: 1;
+}
+
 @media (hover:hover) {
   .table .\*\:hover > *tr:hover,
   .table .\*\:hover > *tr:nth-child(even):hover {
@@ -6270,6 +6310,10 @@ details[open] ul {
   --tw-bg-opacity: 0.5;
 }
 
+.hover\:bg-opacity-70:hover {
+  --tw-bg-opacity: 0.7;
+}
+
 .active\:\!bg-error:active {
   --tw-bg-opacity: 1 !important;
   background-color: var(--fallback-er,oklch(var(--er)/var(--tw-bg-opacity))) !important;
@@ -6281,6 +6325,10 @@ details[open] ul {
 
 .active\:bg-opacity-60:active {
   --tw-bg-opacity: 0.6;
+}
+
+.active\:bg-opacity-80:active {
+  --tw-bg-opacity: 0.8;
 }
 
 .active\:\!text-error:active {
