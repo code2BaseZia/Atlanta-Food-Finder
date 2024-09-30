@@ -1,5 +1,16 @@
 let prevUserPos;
 
+function haversine_distance(mk1, mk2) {
+  let R = 3958.8; // Radius of the Earth in miles
+  let rlat1 = mk1.lat * (Math.PI/180); // Convert degrees to radians
+  let rlat2 = mk2.lat * (Math.PI/180); // Convert degrees to radians
+  let difflat = rlat2-rlat1; // Radian difference (latitudes)
+  let difflon = (mk2.lng-mk1.lng) * (Math.PI/180); // Radian difference (longitudes)
+
+  let d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+  return d;
+}
+
 function handleLocationError(
   browserHasGeolocation,
   infoWindow,
@@ -54,8 +65,8 @@ async function startTracking() {
         accuracyCircle.setRadius(position.coords.accuracy);
 
         // Fetch restaurants as needed
-        let locationUpdate = prevUserPos && (userPos.lat - prevUserPos.lat !== 0) && (userPos.lng - prevUserPos.lng !== 0);
-        if ((locationUpdate && !input.value) || !prevUserPos) {
+        let locationUpdate = !prevUserPos || haversine_distance(prevUserPos, userPos) >= 0.01;
+        if (locationUpdate && !input.value) {
             showLoading();
             fetchNearbyRestaurants(pos);
         }

@@ -1,27 +1,21 @@
-let map, infoWindow, userMarker, watchId, accuracyCircle, restaurants, getNextPage;
+let map, infoWindow, userMarker, watchId, accuracyCircle;
 let restaurantMarkers = [];
 let centeredOnce = false;
 
+let AdvancedMarkerElement;
+
 async function initMap() {
-  let mapStyles = [
-      {
-          featureType: 'poi',
-          elementType: 'labels',
-          stylers: [
-              { visibility: 'off' }
-          ]
-      }
-  ];
+  const { Map } = await google.maps.importLibrary('maps');
+  ({ AdvancedMarkerElement } = await google.maps.importLibrary('marker'));
+  ({ Place, SearchByTextRankPreference, SearchNearbyRankPreference } = await google.maps.importLibrary('places'));
 
   // Initialize the map with a default center; this will be updated once the user's location is obtained
-  map = new google.maps.Map(document.getElementById("map"), {
+  map = new Map(document.getElementById("map"), {
     center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
     zoom: 17,
-    styles: mapStyles, // Customizes map display to only show restaurants
     disableDefaultUI: true,
+    mapId: 'DEMO_MAP_ID',
   });
-
-  infoWindow = new google.maps.InfoWindow();
 
   // Initialize the user marker with a blue dot icon
   userMarker = new google.maps.Marker({
@@ -48,9 +42,6 @@ async function initMap() {
     radius: 0, // Will be updated with accuracy
   });
 
-  // Initialize the Places service
-  placesService = new google.maps.places.PlacesService(map);
-
   // Start tracking the user's location & start autocomplete
   await startTracking();
 }
@@ -59,62 +50,18 @@ function clearRestaurants() {
     restaurants = [];
 }
 
-// Search function used to find restaurants around user
-function fetchNearbyRestaurants(position) {
-    const request = {
-        location: new google.maps.LatLng(position.lat, position.lng),
-        types: ['restaurant', 'food', 'cafe', 'bar'],
-        rankBy: google.maps.places.RankBy.DISTANCE,
-    };
-    clearRestaurants();
-    placesNearbyRestaurantSearch(request);
-}
+// Create red pins at all found restaurants
+function createRestaurantMarker(place) {
+  if (!place.location) return;
 
-function placesNearbyRestaurantSearch(request) {
-    placesService.nearbySearch(request, (results, status, pagination) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK && !results) {
-            console.error('PlacesService was not successful for the following reason: ' + status);
-        }
-            if (pagination && pagination.hasNextPage) {
-                getNextPage = () => {
-                    pagination.nextPage();
-                };
-            }
-            populateRestaurants(results, pagination);
-            if (!pagination.hasNextPage) {
-                hideLoading() // Hide loading indicator
-                clearRestaurantMarkers();
-                restaurants.forEach((restaurant) => {
-                    createRestaurantMarker(restaurant);
-                });
-            }
-    });
-}
-  function populateRestaurants(results, pagination) {
-    for (let i = 0; i < results.length; i++) {
-        restaurants.push(results[i]); // Populate new restaurants to display details
-    }
-    if (getNextPage && pagination.hasNextPage) {
-        getNextPage();
-    }
-  }
-  // Create red pins at all found restaurants
-  function createRestaurantMarker(place) {
-  if (!place.geometry || !place.geometry.location) return;
-
-  const icon = {
-      url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
-      scaledSize: new google.maps.Size(32, 32),
-    };
-  const marker = new google.maps.Marker({
-    map: map,
-    position: place.geometry.location,
-    title: place.name,
-    icon: icon,
+  const marker = new AdvancedMarkerElement({
+    map,
+    position: place.location,
+    title: place.displayName,
   });
 
   // Add click listener to marker to show InfoWindow
-  google.maps.event.addListener(marker, 'click', () => {
+  marker.addListener('gmp-click', () => {
     showDetails(place);
   });
 
@@ -144,3 +91,5 @@ function reCenter() {
 function zoom(delta) {
   map.setZoom(map.zoom + delta);
 }
+
+initMap();
