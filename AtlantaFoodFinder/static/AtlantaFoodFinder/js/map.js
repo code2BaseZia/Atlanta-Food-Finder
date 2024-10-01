@@ -14,7 +14,7 @@ async function initMap() {
     center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
     zoom: 17,
     disableDefaultUI: true,
-    mapId: 'DEMO_MAP_ID',
+    mapId: '4e0d254a4ffc45c6',
   });
 
   // Initialize the user marker with a blue dot icon
