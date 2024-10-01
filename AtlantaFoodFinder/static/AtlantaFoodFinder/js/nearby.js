@@ -19,9 +19,11 @@ async function placesNearbyRestaurantSearch(request) {
     populateRestaurants(places);
     hideLoading();
     clearRestaurantMarkers();
-    restaurants.forEach((restaurant) => {
-        createRestaurantMarker(restaurant);
-    });
+    if (!document.getElementById("searchBar").input || document.getElementById("searchBar").input === "") {
+        restaurants.forEach((restaurant) => {
+            createRestaurantMarker(restaurant);
+        });
+    }
 }
 
 function populateRestaurants(results) {
