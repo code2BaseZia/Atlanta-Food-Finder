@@ -1,18 +1,19 @@
 let map, infoWindow, userMarker, watchId, accuracyCircle;
 let restaurantMarkers = [];
 let centeredOnce = false;
+let rectangle;
 
 let AdvancedMarkerElement;
 
 async function initMap() {
   const { Map } = await google.maps.importLibrary('maps');
   ({ AdvancedMarkerElement } = await google.maps.importLibrary('marker'));
-  ({ Place, SearchByTextRankPreference, SearchNearbyRankPreference } = await google.maps.importLibrary('places'));
+  ({ Place, SearchByTextRankPreference, SearchNearbyRankPreference, BusinessStatus, PriceLevel } = await google.maps.importLibrary('places'));
 
   // Initialize the map with a default center; this will be updated once the user's location is obtained
   map = new Map(document.getElementById("map"), {
-    center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
-    zoom: 17,
+    center: { lat: 33.75004496865218, lng: -84.3884581661495 }, // Temporary center; will update to user's location
+    zoom: 16,
     disableDefaultUI: true,
     mapId: '4e0d254a4ffc45c6',
   });
@@ -41,6 +42,21 @@ async function initMap() {
     map: map,
     radius: 0, // Will be updated with accuracy
   });
+
+  rectangle = new google.maps.Rectangle({
+        strokeColor: "#ff0000",
+        strokeOpacity: 1,
+        strokeWeight: 3,
+        fillOpacity: 0.2,
+        fillColor: "#0000ff",
+        map: map,
+        bounds: {
+          north: 1,
+          south: 0,
+          east: 1,
+          west: 0,
+        },
+    });
 
   // Start tracking the user's location & start autocomplete
   await startTracking();
@@ -83,9 +99,9 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
-function reCenter() {
-  map.setCenter(userMarker.position);
-  map.setZoom(17);
+async function reCenter() {
+  map.setZoom(16);
+  map.panTo(userMarker.position);
 }
 
 function zoom(delta) {
