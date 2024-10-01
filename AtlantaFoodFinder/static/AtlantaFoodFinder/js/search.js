@@ -1,20 +1,5 @@
 let keyTimer, searchedRestaurants, filteredRestaurants, sortedRestaurants;
 
-// All parameters for filters
-let filter = {
-    byDistance: false,
-    byRating: false,
-    byPrice: false,
-    byOpen: false,
-    distanceFilter: 0.0,
-    ratingFilter: 0.0,
-    priceFilter: { min: 1, max: 4 },
-};
-// All parameters for sorting
-const find = 'popularity';
-
-const sort = 'rating';
-
 const input = document.getElementById('searchBar');
 const container = document.getElementById('results');
 
@@ -54,19 +39,38 @@ function toggleSearch() {
 
 // Search function used for keyword search for searchbox
 async function searchNearbyPlaces(keyword) {
+    const ranks = { popular: SearchByTextRankPreference.RELEVANCE, close: SearchByTextRankPreference.DISTANCE }
+
     const request = {
         textQuery: keyword,
         fields: ['displayName', 'location', 'photos', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'priceLevel'],
-        locationBias: userMarker.getPosition(),
         includedType: 'restaurant',
-        rankBy: SearchByTextRankPreference.DISTANCE,
+        rankPreference: ranks[rankBy],
     };
+
+    if (filters.distance.on) {
+        request.locationRestriction = createBounds(userPos, filters.distance.value);
+    } else {
+        request.locationBias = userPos;
+    }
+    if (filters.rating.on) {
+        request.minRating = parseFloat(filters.rating.value);
+    }
+    if (filters.price.on) {
+        const levels = [PriceLevel.INEXPENSIVE, PriceLevel.MODERATE, PriceLevel.EXPENSIVE, PriceLevel.VERY_EXPENSIVE];
+        request.priceLevels = levels.slice(filters.price.min - 1, filters.price.max);
+    }
+    if (filters.open.on) {
+        request.isOpenNow = true;
+    }
+
+    console.log(request);
 
     // Use nearbySearch to search for places near the current location
     const { places } = await Place.searchByText(request);
     clearSearchedRestaurants();
     searchedRestaurants = places;
-    //sortAndFilter();
+    showOptions();
     await updateViews(places);
 }
 
@@ -87,19 +91,6 @@ input.addEventListener("input", () => {
     clearTimeout(keyTimer);
     keyTimer = setTimeout(handleSearch,500);
 });
-
-async function sortAndFilter() {
-    filteredRestaurants = await searchedRestaurants.filter(async (restaurant) => {
-    let ratingMatch = filter.byRating ? (restaurant.rating >= filter.ratingFilter) : true;
-    let priceMatch = filter.byPrice ? (restaurant.priceLevel <= filter.priceFilter) : true;
-    let openMatch = filter.byOpen ? await restaurant.isOpen() : true;
-
-    return ratingMatch && priceMatch && openMatch;
-    });
-    if (currentSort === sort.RATING) {
-        sortedRestaurants = filteredRestaurants.toSorted((restaurantA,restaurantB) => restaurantA.rating - restaurantB.rating);
-    } else sortedRestaurants = filteredRestaurants;
-}
 
 async function updateViews(results) {
     clearRestaurantMarkers();

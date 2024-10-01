@@ -6,6 +6,7 @@
         <meta charset="UTF-8">
         <title>Atlanta Food Finder</title>
         <link rel="stylesheet" href="{% static 'AtlantaFoodFinder/css/index.css' %}">
+        <link rel="stylesheet" href="{% static 'AtlantaFoodFinder/css/sliders.css' %}">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Galada&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Zain:wght@200;300;400;700;800;900&display=swap" rel="stylesheet">
@@ -124,16 +125,187 @@
                     </svg>
                 </button>
             </div>
-            <div id="search" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
+            <div id="search" class="absolute inset-y-4 right-4 card bg-base-100 w-[32rem] max-w-[calc(100vw-7rem)] shadow-xl">
                 <div class="card-body h-full p-0 pb-4">
-                    <label class="bg-base-200 input input-bordered input-secondary flex items-center shrink-0 gap-2 m-6 mb-2">
+                    <label class="input input-bordered input-secondary m-6 mb-1">
                         <input id="searchBar" type="text" class="grow" placeholder="Search..." />
-                        <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0" onclick="handleSearch()">
+                        <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0">
                             <svg class="feather-sm">
                                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#search" />
                             </svg>
                         </button>
                     </label>
+                    <div id="controls" class="flex flex-row items-end gap-2 px-6">
+                        <fieldset id="find" class="grow">
+                            <legend>Find:</legend>
+                            <details class="dropdown w-full">
+                                <summary class="list-none input input-secondary input-bordered m-1">
+                                    <span class="grow">Most Popular</span>
+                                    <svg class="feather-sm chevron">
+                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#chevron-down" />
+                                    </svg>
+                                </summary>
+                                <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow" id="popReg">Most Popular</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="find" value="popular" checked="checked"  class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow">Closest</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="find" value="close" class="hidden" />
+                                        </label>
+                                    </li>
+                                </ul>
+                            </details>
+                        </fieldset>
+                        <fieldset id="sort" class="grow">
+                            <legend>Sort by:</legend>
+                            <details class="dropdown w-full">
+                                <summary class="list-none input input-secondary input-bordered m-1">
+                                    <span class="grow">None</span>
+                                    <svg class="feather-sm chevron">
+                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#chevron-down" />
+                                    </svg>
+                                </summary>
+                                <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow">None</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="sort" value="none" checked="checked" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow">Distance</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="sort" value="distance" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow">Rating</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="sort" value="rating" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow">Price</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="sort" value="price" class="hidden" />
+                                        </label>
+                                    </li>
+                                </ul>
+                            </details>
+                        </fieldset>
+                        <fieldset id="filter" class="grow-0">
+                            <details class="dropdown dropdown-end w-full">
+                                <summary class="btn btn-secondary btn-flat m-1">
+                                    <svg class="feather-md">
+                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#filter" />
+                                    </svg>
+                                </summary>
+                                <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
+                                    <li class="transition-colors">
+                                        <label class="flex flex-row">
+                                            <span class="grow">Distance</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="checkbox" name="distance" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li class="transition-colors">
+                                        <label class="flex flex-row">
+                                            <span class="grow">Rating</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="checkbox" name="rating" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li class="transition-colors">
+                                        <label class="flex flex-row">
+                                            <span class="grow">Price</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="checkbox" name="price" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li class="transition-colors">
+                                        <label class="flex flex-row">
+                                            <span class="grow">Open</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="checkbox" name="open" class="hidden" />
+                                        </label>
+                                    </li>
+                                </ul>
+                            </details>
+                        </fieldset>
+                    </div>
+                    <div id="distance" class="px-6 hidden">
+                        <label>
+                            Max distance:
+                            <span class="flex flex-row items-center gap-2">
+                                0
+                                <span class="tooltip tooltip-secondary grow h-5" data-tip="5.0 mi" style="--slider-progress: 1">
+                                    <input type="range" min="0" max="5" step="0.1" value="5" class="slider slider-secondary" />
+                                </span>
+                                5 mi
+                            </span>
+                        </label>
+                    </div>
+                    <div id="rating" class="px-6 hidden">
+                        <label>
+                            Min rating:
+                            <span class="flex flex-row items-center gap-2">
+                                0
+                                <span class="tooltip tooltip-secondary grow h-5" data-tip="0.0">
+                                    <input type="range" min="0" max="5" step="0.5" value="0" class="slider slider-secondary" />
+                                </span>
+                                <span class="flex flex-row items-center gap-1">
+                                    5
+                                    <svg class="feather-sm fill-accent">
+                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
+                                    </svg>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                    <div id="price" class="px-6 hidden">
+                        <label>
+                            Price range:
+                            <span class="flex flex-row items-center gap-2">
+                                $
+                                <span class="grow h-5 relative">
+                                    <input type="range" min="1" max="4" step="1" value="1" class="slider slider-secondary min-slider" />
+                                    <input type="range" min="1" max="4" step="1" value="4" class="slider slider-secondary max-slider" />
+                                </span>
+                                $$$$
+                            </span>
+                        </label>
+                    </div>
                     <ul id="results" class="grow w-full menu menu-vertical gap-2 overflow-scroll flex-nowrap px-6 scroll-shadow top">
                         <!-- RESTAURANT RESULTS GO HERE -->
                     </ul>
@@ -234,8 +406,8 @@
         <script src="{% static 'AtlantaFoodFinder/js/map.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/nearby.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/search.js' %}"></script>
+        <script src="{% static 'AtlantaFoodFinder/js/filter.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/details.js' %}"></script>
         <script src="{% static 'AtlantaFoodFinder/js/shadow.js' %}"></script>
-    
     </body>
 </html>

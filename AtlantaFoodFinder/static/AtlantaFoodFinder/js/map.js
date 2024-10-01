@@ -1,6 +1,7 @@
 let map, infoWindow, userMarker, watchId, accuracyCircle;
 let restaurantMarkers = [];
 let centeredOnce = false;
+let rectangle;
 
 let AdvancedMarkerElement;
 
@@ -41,6 +42,21 @@ async function initMap() {
     map: map,
     radius: 0, // Will be updated with accuracy
   });
+
+  rectangle = new google.maps.Rectangle({
+        strokeColor: "#ff0000",
+        strokeOpacity: 1,
+        strokeWeight: 3,
+        fillOpacity: 0.2,
+        fillColor: "#0000ff",
+        map: map,
+        bounds: {
+          north: 1,
+          south: 0,
+          east: 1,
+          west: 0,
+        },
+    });
 
   // Start tracking the user's location & start autocomplete
   await startTracking();
