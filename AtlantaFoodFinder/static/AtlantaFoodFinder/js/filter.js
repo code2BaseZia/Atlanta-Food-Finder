@@ -53,9 +53,32 @@ const createBounds = (pos, r) => {
 }
 
 function clientSort() {
-    switch (sortOrder) {
+    let sortedRestaurants;
+    const priceLevels = { FREE: 0, INEXPENSIVE: 1, MODERATE: 2, EXPENSIVE: 3, VERY_EXPENSIVE: 4 };
 
+    const query = input.value;
+    if (query) sortedRestaurants = [...searchedRestaurants];
+    else sortedRestaurants = [...restaurants];
+
+    switch (sortOrder) {
+        case 'distance':
+            sortedRestaurants.sort(
+                (a, b) => haversine_distance(userPos, a.location) - haversine_distance(userPos, b.location)
+            );
+            break;
+        case 'rating':
+            sortedRestaurants.sort((a, b) => b.rating - a.rating);
+            break;
+        case 'priceA':
+            sortedRestaurants.sort((a, b) => priceLevels[a.priceLevel] - priceLevels[b.priceLevel]);
+            break;
+        case 'priceD':
+            sortedRestaurants.sort((a, b) => priceLevels[b.priceLevel] - priceLevels[a.priceLevel]);
+            break;
     }
+
+    console.log(sortedRestaurants);
+    updateViews(sortedRestaurants);
 }
 
 function hideOptions() {
@@ -64,7 +87,6 @@ function hideOptions() {
         find.selected.innerHTML = popReg.innerHTML;
     }
 
-    sort.dropdown.classList.add('hidden');
     filter.dropdown.classList.add('hidden');
 
     forms.distance.base.classList.add('hidden');
@@ -78,7 +100,6 @@ function showOptions () {
         find.selected.innerHTML = popReg.innerHTML;
     }
 
-    sort.dropdown.classList.remove('hidden');
     filter.dropdown.classList.remove('hidden');
 
     if (filters.distance.on) {

@@ -171,21 +171,12 @@
                             <legend>Sort by:</legend>
                             <details class="dropdown w-full">
                                 <summary class="list-none input input-secondary input-bordered m-1">
-                                    <span class="grow">None</span>
+                                    <span class="grow">Distance</span>
                                     <svg class="feather-sm chevron">
                                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#chevron-down" />
                                     </svg>
                                 </summary>
                                 <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
-                                    <li>
-                                        <label class="flex flex-row">
-                                            <span class="grow">None</span>
-                                            <svg class="feather-sm">
-                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
-                                            </svg>
-                                            <input type="radio" name="sort" value="none" checked="checked" class="hidden" />
-                                        </label>
-                                    </li>
                                     <li>
                                         <label class="flex flex-row">
                                             <span class="grow">Distance</span>
@@ -206,11 +197,20 @@
                                     </li>
                                     <li>
                                         <label class="flex flex-row">
-                                            <span class="grow">Price</span>
+                                            <span class="grow">Price asc.</span>
                                             <svg class="feather-sm">
                                                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
                                             </svg>
-                                            <input type="radio" name="sort" value="price" class="hidden" />
+                                            <input type="radio" name="sort" value="priceA" class="hidden" />
+                                        </label>
+                                    </li>
+                                    <li>
+                                        <label class="flex flex-row">
+                                            <span class="grow">Price desc.</span>
+                                            <svg class="feather-sm">
+                                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                            </svg>
+                                            <input type="radio" name="sort" value="priceD" class="hidden" />
                                         </label>
                                     </li>
                                 </ul>

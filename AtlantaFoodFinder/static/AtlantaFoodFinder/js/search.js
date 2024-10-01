@@ -1,4 +1,4 @@
-let keyTimer, searchedRestaurants, filteredRestaurants, sortedRestaurants;
+let keyTimer, searchedRestaurants;
 
 const input = document.getElementById('searchBar');
 const container = document.getElementById('results');
@@ -68,14 +68,12 @@ async function searchNearbyPlaces(keyword) {
 
     // Use nearbySearch to search for places near the current location
     const { places } = await Place.searchByText(request);
-    clearSearchedRestaurants();
     searchedRestaurants = places;
     showOptions();
     await updateViews(places);
 }
 
 function clearSearchedRestaurants() {
-    searchedRestaurants = [];
     container.innerHTML = '';
     clearRestaurantMarkers();
 }
@@ -93,7 +91,7 @@ input.addEventListener("input", () => {
 });
 
 async function updateViews(results) {
-    clearRestaurantMarkers();
+    clearSearchedRestaurants();
 
     results.forEach((result) => createRestaurantMarker(result));
 
