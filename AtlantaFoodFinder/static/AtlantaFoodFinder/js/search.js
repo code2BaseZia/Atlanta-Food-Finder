@@ -2,30 +2,37 @@ let keyTimer, searchedRestaurants, filteredRestaurants, sortedRestaurants;
 
 // All parameters for filters
 let filter = {
+    byDistance: false,
     byRating: false,
     byPrice: false,
     byOpen: false,
+    distanceFilter: 0.0,
     ratingFilter: 0.0,
-    cuisineFilter:"",
-    priceFilter:0,
+    priceFilter: { min: 1, max: 4 },
 };
 // All parameters for sorting
-const sort = 'popularity';
+const find = 'popularity';
+
+const sort = 'rating';
 
 const input = document.getElementById('searchBar');
+const container = document.getElementById('results');
 
 const noSearch = () => {
     input.value = '';
     clearSearchedRestaurants();
-    restaurants.forEach((restaurant) => {
-        createRestaurantMarker(restaurant);
-    });
+    updateViews(restaurants);
 }
 
 gsap.set('#search', { xPercent: 120 });
 
 function toggleSearch() {
-    showSearch = !showSearch;
+    if (details) {
+        showSearch = true;
+    } else {
+        showSearch = !showSearch;
+    }
+
     if (showSearch) {
         if (details) {
             hideDetails();
@@ -34,24 +41,25 @@ function toggleSearch() {
             gsap.from('#search', { xPercent: 120, duration: 0.25, ease: 'power1.out' });
         }
     } else {
-        gsap.to('#search', {
-            xPercent: 120,
-            duration: 0.25,
-            ease: 'power1.in',
-            onComplete: noSearch
-        });
+        if (!details) {
+            gsap.to('#search', {
+                xPercent: 120,
+                duration: 0.25,
+                ease: 'power1.in',
+                onComplete: noSearch
+            });
+        }
     }
 }
 
 // Search function used for keyword search for searchbox
 async function searchNearbyPlaces(keyword) {
-    console.log('search');
     const request = {
         textQuery: keyword,
-        fields: ['displayName', 'location', 'photos', 'formattedAddress', 'rating', 'userRatingCount'],
+        fields: ['displayName', 'location', 'photos', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'priceLevel'],
         locationBias: userMarker.getPosition(),
         includedType: 'restaurant',
-        rankBy: SearchByTextRankPreference.POPULARITY,
+        rankBy: SearchByTextRankPreference.DISTANCE,
     };
 
     // Use nearbySearch to search for places near the current location
@@ -59,25 +67,25 @@ async function searchNearbyPlaces(keyword) {
     clearSearchedRestaurants();
     searchedRestaurants = places;
     //sortAndFilter();
-    await updateViews();
+    await updateViews(places);
 }
 
 function clearSearchedRestaurants() {
-    console.log('query');
     searchedRestaurants = [];
-    const container = document.getElementById('results');
     container.innerHTML = '';
     clearRestaurantMarkers();
 }
 
+function handleSearch() {
+    const query = input.value;
+    if (query) searchNearbyPlaces(query);
+    else noSearch();
+}
+
 // Use addEventListener on the input element (DOM)
-input.addEventListener("input", (e) => {
+input.addEventListener("input", () => {
     clearTimeout(keyTimer);
-    keyTimer = setTimeout( () => {
-      const query = e.target.value;
-      if (query) searchNearbyPlaces(query);
-      else noSearch();
-    },500);
+    keyTimer = setTimeout(handleSearch,500);
 });
 
 async function sortAndFilter() {
@@ -93,37 +101,73 @@ async function sortAndFilter() {
     } else sortedRestaurants = filteredRestaurants;
 }
 
-async function updateViews() {
-      clearRestaurantMarkers();
-      console.log('update');
+async function updateViews(results) {
+    clearRestaurantMarkers();
 
-      const container = document.getElementById('results');
+    results.forEach((result) => createRestaurantMarker(result));
 
-      for (let i = 0; i < searchedRestaurants.length; ++i) {
-        createRestaurantMarker(searchedRestaurants[i]);
-
+    for (let i = 0; i < results.length; ++i) {
         const item = document.createElement('li');
-        const isOpen = await searchedRestaurants[i].isOpen();
+
+        let statusColor, statusText;
+        const isOpen = await results[i].isOpen();
+        switch (results[i].businessStatus) {
+            case BusinessStatus.CLOSED_PERMANENTLY:
+                statusColor = 'text-error';
+                statusText = 'Permanently Closed';
+                break;
+            case BusinessStatus.CLOSED_TEMPORARILY:
+                statusColor = 'text-warning';
+                statusText = 'Temporarily Closed';
+                break;
+            default:
+                statusColor = isOpen ? 'text-success' : 'text-error';
+                statusText = isOpen ? 'Open' : 'Closed';
+        }
+
+        let priceIndicator;
+        switch (results[i].priceLevel) {
+            case PriceLevel.INEXPENSIVE:
+                priceIndicator = '$';
+                break;
+            case PriceLevel.MODERATE:
+                priceIndicator = '$$';
+                break;
+            case PriceLevel.EXPENSIVE:
+                priceIndicator = '$$$'
+                break;
+            case PriceLevel.VERY_EXPENSIVE:
+                priceIndicator = '$$$$';
+                break;
+            default:
+                priceIndicator = '';
+        }
 
         item.innerHTML = `
             <div class="card image-full card-compact p-0 gap-0">
-                ${ searchedRestaurants[i].photos ? `<figure><img src="${searchedRestaurants[i].photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
+                ${ results[i].photos ? `<figure><img src="${results[i].photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
                 <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
-                    <h2 class="card-title grow-0">${ searchedRestaurants[i].displayName }</h2>
-                    <p class="grow-0 ${ isOpen ? 'text-success' : 'text-error' }">${ isOpen ? 'Open' : 'Closed' }</p>
-                    <p class="grow-0">${ searchedRestaurants[i].formattedAddress }</p>
-                    ${ searchedRestaurants[i].rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
-                        Rating: ${searchedRestaurants[i].rating}
-                        ${star.outerHTML}
-                    </p>` : '<p class="grow-0">No Rating</p>' }
+                    <div class="w-full flex flex-row justify-between items-center">
+                        <h2 class="card-title grow-0 font-heading text-2xl">${ results[i].displayName }</h2>
+                        <p class="grow-0 ${ statusColor }">${ statusText }</p>
+                    </div>
+                    <p class="grow-0">${ results[i].formattedAddress }</p>
+                    <span class="w-full flex flex-row justify-between">
+                        ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
+                            Rating: ${results[i].rating}
+                            ${star.outerHTML}
+                            (${results[i].userRatingCount})
+                        </p>` : '<p class="grow-0">No Ratings</p>' }
+                        <p class="grow-0">${priceIndicator}</p>
+                    </span>
                 </div>
             </div>
         `.trim();
 
         item.addEventListener('click', () => {
-            showDetails(searchedRestaurants[i]);
+            showDetails(results[i]);
         });
 
         container.appendChild(item);
-      }
+    }
 }

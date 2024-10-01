@@ -128,7 +128,7 @@
                 <div class="card-body h-full p-0 pb-4">
                     <label class="bg-base-200 input input-bordered input-secondary flex items-center shrink-0 gap-2 m-6 mb-2">
                         <input id="searchBar" type="text" class="grow" placeholder="Search..." />
-                        <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0">
+                        <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0" onclick="handleSearch()">
                             <svg class="feather-sm">
                                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#search" />
                             </svg>
@@ -148,36 +148,70 @@
                         </svg>
                     </button>
                 </figure>
-                <div class="card-body h-full justify-start bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
-                    <h2 class="card-title grow-0"></h2>
-                    <p class="address grow-0"></p>
+                <div class="card-body w-full h-full justify-start overflow-y-scroll">
+                    <div class="w-full flex flex-row justify-between items-center">
+                        <h2 class="card-title grow-0 font-heading text-3xl"></h2>
+                        <p class="open grow-0"></p>
+                    </div>
+                    <small class="address grow-0"></small>
                     <div class="flex flex-row justify-between">
                         <p class="rating grow-0 flex flex-row gap-2 items-center">
                             <span class="number"></span>
                             <span class="stars flex flex-row gap-0 items-center"></span>
+                            <span class="count"></span>
                         </p>
-                        <p class="open grow-0"></p>
+                        <p class="price grow-0"></p>
                     </div>
                     <a class="grow-0 link link-accent transition-colors mb-4" target="_blank" rel="noopener noreferrer">View on Google Maps</a>
                     <div class="collapse transition-all collapse-arrow bg-base-200">
                         <input type="radio" name="my-accordion" checked="checked" />
-                        <div class="collapse-title text-xl font-medium">Info</div>
-                        <div class="collapse-content">
-                            <p>hello</p>
+                        <div class="collapse-title text-2xl font-heading font-medium">Info</div>
+                        <div class="collapse-content flex flex-col gap-2">
+                            <h4 class="text-lg font-bold grow-0">Description:</h4>
+                            <p class="desc grow-0">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id tortor mauris. Cras ut ex ante. Donec nec est vitae velit porta lacinia a in eros. In et leo a elit aliquam commodo. Etiam in porta augue. Suspendisse sit amet viverra metus, dictum molestie sem. Duis lectus lorem, molestie eget est sed, facilisis lacinia tortor.</p>
+                            <small class="types grow-0">Restaurant, Bar, etc...</small>
+                            <h4 class="text-lg font-bold grow-0 mt-2">Price:</h4>
+                            <p class="price-level grow-0">Typically between...</p>
+                            <p class="payment-methods grow-0">Accepts Credit, Debit, Contactless</p>
+                            <svg class="feather-sm hidden" id="check">
+                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                            </svg>
+                            <svg class="feather-sm hidden" id="x">
+                                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
+                            </svg>
+                            <div class="w-full grid info-grid grid-rows-5 grid-flow-col grow-0 mt-2">
+                                <span class="breakfast flex flex-row items-center gap-1"><svg></svg>Breakfast</span>
+                                <span class="brunch flex flex-row items-center gap-1"><svg></svg>Brunch</span>
+                                <span class="lunch flex flex-row items-center gap-1"><svg></svg>Lunch</span>
+                                <span class="dinner flex flex-row items-center gap-1"><svg></svg>Dinner</span>
+                                <span class="cocktails flex flex-row items-center gap-1"><svg></svg>Cocktails</span>
+                                <span class="dine-in flex flex-row items-center gap-1"><svg></svg>Dine-in</span>
+                                <span class="reserve flex flex-row items-center gap-1"><svg></svg>Reservations</span>
+                                <span class="takeout flex flex-row items-center gap-1"><svg></svg>Takeout</span>
+                                <span class="deliver flex flex-row items-center gap-1"><svg></svg>Delivery</span>
+                                <span class="pickup flex flex-row items-center gap-1"><svg></svg>Curbside Pickup</span>
+                            </div>
                         </div>
                     </div>
                     <div class="collapse transition-all collapse-arrow bg-base-200">
                         <input type="radio" name="my-accordion" />
-                        <div class="collapse-title text-xl font-medium">Contact</div>
-                        <div class="collapse-content">
-                            <p>hello</p>
+                        <div class="collapse-title text-2xl font-heading font-medium">Hours & Contact</div>
+                        <div class="collapse-content flex flex-col gap-2">
+                            <h4 class="text-lg font-bold  grow-0">Contact: </h4>
+                            <p class="phone grow-0">Phone: </p>
+                            <p class="grow-0 break-words">Website: <a class="website link link-accent break-words" href=""></a></p>
+                            <h4 class="text-lg font-bold grow-0 mt-2">Hours</h4>
+                            <ul class="hours grow-0"></ul>
                         </div>
                     </div>
                     <div class="collapse transition-all collapse-arrow bg-base-200">
                         <input type="radio" name="my-accordion" />
-                        <div class="collapse-title text-xl font-medium">Reviews</div>
-                        <div class="collapse-content">
-                            <p>hello</p>
+                        <div class="collapse-title text-2xl font-heading font-medium">Reviews</div>
+                        <div class="collapse-content flex flex-col gap-4">
+                            <h4 class="text-lg font-bold grow-0">Top 5 Reviews:</h4>
+                            <div class="grow-0 reviews w-full flex flex-col gap-3">
+                                <!-- REVIEWS GO HERE -->
+                            </div>
                         </div>
                     </div>
                 </div>

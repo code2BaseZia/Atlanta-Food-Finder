@@ -2,7 +2,7 @@
 function fetchNearbyRestaurants(position) {
     showLoading();
     const request = {
-        fields: ['displayName', 'location', 'photos', 'formattedAddress', 'rating', 'userRatingCount'],
+        fields: ['displayName', 'location', 'photos', 'formattedAddress', 'rating', 'userRatingCount', 'businessStatus', 'priceLevel'],
         locationRestriction: {
             center: new google.maps.LatLng(position.lat, position.lng),
             radius: 1500,
@@ -15,18 +15,8 @@ function fetchNearbyRestaurants(position) {
 }
 
 async function placesNearbyRestaurantSearch(request) {
-    const { places } = await Place.searchNearby(request);
-    populateRestaurants(places);
+    const {places} = await Place.searchNearby(request);
+    restaurants = places;
+    await updateViews(restaurants);
     hideLoading();
-    clearRestaurantMarkers();
-    restaurants.forEach((restaurant) => {
-        createRestaurantMarker(restaurant);
-    });
-}
-
-function populateRestaurants(results) {
-    for (let i = 0; i < results.length; i++) {
-        console.log(results[i]);
-        restaurants.push(results[i]); // Populate new restaurants to display details
-    }
 }

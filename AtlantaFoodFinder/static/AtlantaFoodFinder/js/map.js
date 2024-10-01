@@ -7,12 +7,12 @@ let AdvancedMarkerElement;
 async function initMap() {
   const { Map } = await google.maps.importLibrary('maps');
   ({ AdvancedMarkerElement } = await google.maps.importLibrary('marker'));
-  ({ Place, SearchByTextRankPreference, SearchNearbyRankPreference } = await google.maps.importLibrary('places'));
+  ({ Place, SearchByTextRankPreference, SearchNearbyRankPreference, BusinessStatus, PriceLevel } = await google.maps.importLibrary('places'));
 
   // Initialize the map with a default center; this will be updated once the user's location is obtained
   map = new Map(document.getElementById("map"), {
-    center: { lat: 0, lng: 0 }, // Temporary center; will update to user's location
-    zoom: 17,
+    center: { lat: 33.75004496865218, lng: -84.3884581661495 }, // Temporary center; will update to user's location
+    zoom: 16,
     disableDefaultUI: true,
     mapId: 'DEMO_MAP_ID',
   });
@@ -83,9 +83,9 @@ window.addEventListener("beforeunload", () => {
   }
 });
 
-function reCenter() {
-  map.setCenter(userMarker.position);
-  map.setZoom(17);
+async function reCenter() {
+  map.setZoom(16);
+  map.panTo(userMarker.position);
 }
 
 function zoom(delta) {
