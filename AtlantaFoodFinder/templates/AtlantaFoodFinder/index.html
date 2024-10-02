@@ -255,8 +255,8 @@
         <figure class="max-h-60">
             <img src="{% static 'AtlantaFoodFinder/images/placeholder.jpg' %}" alt="Restaurant Image" />
             <div class="absolute inset-x-0 top-0 p-4 flex flex-row {% if user.is_authenticated %}justify-between{% else %}justify-start{% endif %}">
-                <button class="btn btn-ghost min-h-0 min-w-0 size-10 p-2">
-                    <svg onclick="hideDetails('')" class="feather-md">
+                <button onclick="hideDetails('#search')" class="btn btn-ghost min-h-0 min-w-0 size-10 p-2">
+                    <svg class="feather-md">
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
                     </svg>
                 </button>

@@ -297,6 +297,7 @@ function showDetails(place) {
             }
         });
     } else if (showFavorites) {
+        showFavorites = false;
         gsap.to('#favorites', {
             xPercent: 120,
             duration: 0.25,
