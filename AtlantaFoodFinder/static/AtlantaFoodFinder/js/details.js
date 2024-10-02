@@ -68,9 +68,10 @@ function showSkeletons() {
     element.info.types.innerHTML = placeholder.outerHTML;
     element.info.price.innerHTML = placeholder.outerHTML;
     element.info.payment.innerHTML = placeholder.outerHTML;
-    Object.entries(element.info.grid).forEach(([ _, v]) => {
+    Object.entries(element.info.grid).forEach(([ key, v]) => {
         console.log(v);
-        v.removeChild(v.childNodes[0]);
+        if (key === "base") return
+        v.removeChild(v.getElementsByTagName("svg").item(0));
         v.classList.remove('text-success', 'text-error');
         v.classList.add('text-transparent');
     });
@@ -243,7 +244,8 @@ async function getDetails(place) {
     if (place.websiteURI) {
         element.contact.website.setAttribute('href', place.websiteURI);
     }
-    place.regularOpeningHours.weekdayDescriptions.forEach((weekday) => {
+    if (place.regularOpeningHours && place.regularOpeningHours.weekdayDescriptions)
+        place.regularOpeningHours.weekdayDescriptions.forEach((weekday) => {
         const li = document.createElement('li');
         li.innerHTML = weekday;
         element.contact.hours.appendChild(li);

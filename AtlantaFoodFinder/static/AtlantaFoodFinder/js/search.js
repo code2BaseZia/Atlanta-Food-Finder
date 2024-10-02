@@ -75,7 +75,7 @@ async function searchNearbyPlaces(keyword) {
         request.isOpenNow = true;
     }
 
-    // Use searchByText to search for places near the current location
+    // Use nearbySearch to search for places near the current location
     const { places } = await Place.searchByText(request);
     searchedRestaurants = places;
     showOptions();
@@ -149,18 +149,18 @@ async function createCard(restaurant) {
 
     item.innerHTML = `
         <div class="card image-full card-compact p-0 gap-0">
-            ${ restaurant.photos && restaurant.photos[0] ? `<figure><img src="${restaurant.photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
+            ${ results[i].photos && results[i].photos.length > 0 ? `<figure><img src="${results[i].photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
             <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
                 <div class="w-full flex flex-row justify-between items-center">
-                    <h2 class="card-title grow-0 font-heading text-2xl">${ restaurant.displayName }</h2>
+                    <h2 class="card-title grow-0 font-heading text-2xl">${ results[i].displayName }</h2>
                     <p class="grow-0 ${ statusColor }">${ statusText }</p>
                 </div>
-                <p class="grow-0">${ restaurant.formattedAddress }</p>
+                <p class="grow-0">${ results[i].formattedAddress }</p>
                 <span class="w-full flex flex-row justify-between">
-                    ${ restaurant.rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
-                        Rating: ${restaurant.rating}
+                    ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
+                        Rating: ${results[i].rating}
                         ${star.outerHTML}
-                        (${restaurant.userRatingCount})
+                        (${results[i].userRatingCount})
                     </p>` : '<p class="grow-0">No Ratings</p>' }
                     <p class="grow-0">${priceIndicator}</p>
                 </span>
