@@ -33,7 +33,7 @@
                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#search" />
             </svg>
         </button>
-        <button id="favoritesButton" class="btn btn-primary p-4 min-h-0 h-max rounded-full">
+        <button id="favoritesButton" class="btn btn-primary p-4 min-h-0 h-max rounded-full" onclick="toggleFavorites()">
             <svg class="feather-lg" id="star">
                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
             </svg>
@@ -63,7 +63,7 @@
     </div>
     <div id="search" class="absolute inset-y-4 right-4 card bg-base-100 w-[32rem] max-w-[calc(100vw-7rem)] shadow-xl">
         <div class="card-body h-full p-0 pb-4">
-            <label class="input input-bordered input-secondary m-6 mb-1">
+            <label class="input input-bordered input-secondary m-6 mb-1 py-2">
                 <input id="searchBar" type="text" class="grow" placeholder="Search..." />
                 <button class="btn btn-secondary btn-ghost min-h-0 size-8 p-0">
                     <svg class="feather-sm">
@@ -261,7 +261,7 @@
             <img src="{% static 'AtlantaFoodFinder/images/placeholder.jpg' %}" alt="Restaurant Image" />
             <div class="absolute inset-x-0 top-0 p-4 flex flex-row justify-between">
                 <button class="btn btn-ghost min-h-0 min-w-0 size-10 p-2">
-                    <svg onclick="hideDetails()" class="feather-md">
+                    <svg onclick="hideDetails('')" class="feather-md">
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
                     </svg>
                 </button>
@@ -338,6 +338,14 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="favorites" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl p-0">
+        <div class="card-body h-full p-0 pb-4">
+            <h1 class="p-6 pb-2">Favorites</h1>
+            <ul id="favoriteRestaurants" class="grow w-full menu menu-vertical gap-2 overflow-scroll flex-nowrap px-6 scroll-shadow">
+                <!-- FAVORITE RESTAURANT GO HERE -->
+            </ul>
         </div>
     </div>
 {% endblock %}

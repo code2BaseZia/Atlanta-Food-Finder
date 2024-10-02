@@ -6,6 +6,7 @@ const container = document.getElementById('results');
 const noSearch = () => {
     input.value = '';
     clearSearchedRestaurants();
+    hideOptions();
     updateViews(restaurants);
 }
 
@@ -20,7 +21,17 @@ function toggleSearch() {
 
     if (showSearch) {
         if (details) {
-            hideDetails();
+            hideDetails('#search');
+        } else if (showFavorites) {
+            gsap.to('#favorites', {
+                xPercent: 120,
+                duration: 0.25,
+                ease: 'power1.in',
+                onComplete: () => {
+                    gsap.set('#search', { xPercent: 0 });
+                    gsap.from('#search', { xPercent: 120, duration: 0.25, ease: 'power1.out' });
+                }
+            });
         } else {
             gsap.set('#search', { xPercent: 0 });
             gsap.from('#search', { xPercent: 120, duration: 0.25, ease: 'power1.out' });
@@ -64,9 +75,7 @@ async function searchNearbyPlaces(keyword) {
         request.isOpenNow = true;
     }
 
-    console.log(request);
-
-    // Use nearbySearch to search for places near the current location
+    // Use searchByText to search for places near the current location
     const { places } = await Place.searchByText(request);
     searchedRestaurants = places;
     showOptions();
@@ -96,67 +105,72 @@ async function updateViews(results) {
     results.forEach((result) => createRestaurantMarker(result));
 
     for (let i = 0; i < results.length; ++i) {
-        const item = document.createElement('li');
-
-        let statusColor, statusText;
-        const isOpen = await results[i].isOpen();
-        switch (results[i].businessStatus) {
-            case BusinessStatus.CLOSED_PERMANENTLY:
-                statusColor = 'text-error';
-                statusText = 'Permanently Closed';
-                break;
-            case BusinessStatus.CLOSED_TEMPORARILY:
-                statusColor = 'text-warning';
-                statusText = 'Temporarily Closed';
-                break;
-            default:
-                statusColor = isOpen ? 'text-success' : 'text-error';
-                statusText = isOpen ? 'Open' : 'Closed';
-        }
-
-        let priceIndicator;
-        switch (results[i].priceLevel) {
-            case PriceLevel.INEXPENSIVE:
-                priceIndicator = '$';
-                break;
-            case PriceLevel.MODERATE:
-                priceIndicator = '$$';
-                break;
-            case PriceLevel.EXPENSIVE:
-                priceIndicator = '$$$'
-                break;
-            case PriceLevel.VERY_EXPENSIVE:
-                priceIndicator = '$$$$';
-                break;
-            default:
-                priceIndicator = '';
-        }
-
-        item.innerHTML = `
-            <div class="card image-full card-compact p-0 gap-0">
-                ${ results[i].photos ? `<figure><img src="${results[i].photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
-                <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
-                    <div class="w-full flex flex-row justify-between items-center">
-                        <h2 class="card-title grow-0 font-heading text-2xl">${ results[i].displayName }</h2>
-                        <p class="grow-0 ${ statusColor }">${ statusText }</p>
-                    </div>
-                    <p class="grow-0">${ results[i].formattedAddress }</p>
-                    <span class="w-full flex flex-row justify-between">
-                        ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
-                            Rating: ${results[i].rating}
-                            ${star.outerHTML}
-                            (${results[i].userRatingCount})
-                        </p>` : '<p class="grow-0">No Ratings</p>' }
-                        <p class="grow-0">${priceIndicator}</p>
-                    </span>
-                </div>
-            </div>
-        `.trim();
-
-        item.addEventListener('click', () => {
-            showDetails(results[i]);
-        });
-
+        const item = await createCard(results[i]);
         container.appendChild(item);
     }
+}
+
+async function createCard(restaurant) {
+    const item = document.createElement('li');
+
+    let statusColor, statusText;
+    const isOpen = await restaurant.isOpen();
+    switch (restaurant.businessStatus) {
+        case BusinessStatus.CLOSED_PERMANENTLY:
+            statusColor = 'text-error';
+            statusText = 'Permanently Closed';
+            break;
+        case BusinessStatus.CLOSED_TEMPORARILY:
+            statusColor = 'text-warning';
+            statusText = 'Temporarily Closed';
+            break;
+        default:
+            statusColor = isOpen ? 'text-success' : 'text-error';
+            statusText = isOpen ? 'Open' : 'Closed';
+    }
+
+    let priceIndicator;
+    switch (restaurant.priceLevel) {
+        case PriceLevel.INEXPENSIVE:
+            priceIndicator = '$';
+            break;
+        case PriceLevel.MODERATE:
+            priceIndicator = '$$';
+            break;
+        case PriceLevel.EXPENSIVE:
+            priceIndicator = '$$$'
+            break;
+        case PriceLevel.VERY_EXPENSIVE:
+            priceIndicator = '$$$$';
+            break;
+        default:
+            priceIndicator = '';
+    }
+
+    item.innerHTML = `
+        <div class="card image-full card-compact p-0 gap-0">
+            ${ restaurant.photos && restaurant.photos[0] ? `<figure><img src="${restaurant.photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
+            <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
+                <div class="w-full flex flex-row justify-between items-center">
+                    <h2 class="card-title grow-0 font-heading text-2xl">${ restaurant.displayName }</h2>
+                    <p class="grow-0 ${ statusColor }">${ statusText }</p>
+                </div>
+                <p class="grow-0">${ restaurant.formattedAddress }</p>
+                <span class="w-full flex flex-row justify-between">
+                    ${ restaurant.rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
+                        Rating: ${restaurant.rating}
+                        ${star.outerHTML}
+                        (${restaurant.userRatingCount})
+                    </p>` : '<p class="grow-0">No Ratings</p>' }
+                    <p class="grow-0">${priceIndicator}</p>
+                </span>
+            </div>
+        </div>
+    `.trim();
+
+    item.addEventListener('click', () => {
+        showDetails(restaurant);
+    });
+
+    return item;
 }

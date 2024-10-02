@@ -77,7 +77,6 @@ function clientSort() {
             break;
     }
 
-    console.log(sortedRestaurants);
     updateViews(sortedRestaurants);
 }
 

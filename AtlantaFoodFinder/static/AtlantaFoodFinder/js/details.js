@@ -297,6 +297,18 @@ function showDetails(place) {
                 gsap.from(element.base, { xPercent: 120, duration: 0.25, ease: 'power1.out' });
             }
         });
+    } else if (showFavorites) {
+        gsap.to('#favorites', {
+            xPercent: 120,
+            duration: 0.25,
+            ease: 'power1.in',
+            onComplete: () => {
+                getDetails(place);
+                details = true;
+                gsap.set(element.base, { xPercent: 0 });
+                gsap.from(element.base, { xPercent: 120, duration: 0.25, ease: 'power1.out' });
+            }
+        });
     } else {
         getDetails(place);
         details = true;
@@ -305,7 +317,7 @@ function showDetails(place) {
     }
 }
 
-function hideDetails() {
+function hideDetails(target) {
     if (details) {
         details = false;
         gsap.to(element.base, {
@@ -313,9 +325,9 @@ function hideDetails() {
             duration: 0.25,
             ease: 'power1.in',
             onComplete: () => {
-                if (showSearch) {
-                    gsap.set('#search', { xPercent: 0 });
-                    gsap.from('#search', { xPercent: 120, duration: 0.25, ease: 'power1.out' });
+                if (showSearch || showFavorites) {
+                    gsap.set(target, { xPercent: 0 });
+                    gsap.from(target, { xPercent: 120, duration: 0.25, ease: 'power1.out' });
                 }
             }
         });
