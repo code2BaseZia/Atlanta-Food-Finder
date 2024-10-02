@@ -152,15 +152,15 @@ async function createCard(restaurant) {
             ${ restaurant.photos && restaurant.photos.length > 0 ? `<figure><img src="${restaurant.photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
             <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
                 <div class="w-full flex flex-row justify-between items-center">
-                    <h2 class="card-title grow-0 font-heading text-2xl">${ results[i].displayName }</h2>
+                    <h2 class="card-title grow-0 font-heading text-2xl">${ restaurant.displayName }</h2>
                     <p class="grow-0 ${ statusColor }">${ statusText }</p>
                 </div>
-                <p class="grow-0">${ results[i].formattedAddress }</p>
+                <p class="grow-0">${ restaurant.formattedAddress }</p>
                 <span class="w-full flex flex-row justify-between">
-                    ${ results[i].rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
-                        Rating: ${results[i].rating}
+                    ${ restaurant.rating ? `<p class="flex flex-row gap-1 grow-0 items-center">
+                        Rating: ${restaurant.rating}
                         ${star.outerHTML}
-                        (${results[i].userRatingCount})
+                        (${restaurant.userRatingCount})
                     </p>` : '<p class="grow-0">No Ratings</p>' }
                     <p class="grow-0">${priceIndicator}</p>
                 </span>
