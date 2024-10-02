@@ -5,5 +5,6 @@
 {% block form %}
     {% csrf_token %}
     {{ form }}
+    <a class="link link-accent text-center" href="{% url 'password_reset' %}">Forgot Password</a>
 {% endblock %}
 {% block button %}<button type="submit" class="btn btn-primary">Log In</button>{% endblock %}

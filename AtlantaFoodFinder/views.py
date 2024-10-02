@@ -1,7 +1,8 @@
-from django.contrib.auth import user_logged_in
+from django.contrib.auth import user_logged_in, logout
 from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.contrib.auth.forms import UserCreationForm
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, TemplateView
@@ -61,6 +62,10 @@ def favorites(request):
                 return JsonResponse(status=200, data={'message': 'Restaurant added to favorites'})
         except Exception as error:
             return JsonResponse(status=500, data={'error': str(error)})
+
+def logout_view(request):
+    logout(request)
+    return redirect(reverse_lazy('home'))
 
 class SignUpView(CreateView):
     form_class = CustomUserCreationForm
