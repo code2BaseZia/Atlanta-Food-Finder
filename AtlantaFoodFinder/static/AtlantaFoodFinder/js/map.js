@@ -16,6 +16,7 @@ async function initMap() {
     zoom: 16,
     disableDefaultUI: true,
     mapId: '4e0d254a4ffc45c6',
+    clickableIcons: false,
   });
 
   // Initialize the user marker with a blue dot icon

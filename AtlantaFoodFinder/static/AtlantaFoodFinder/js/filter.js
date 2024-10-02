@@ -63,7 +63,7 @@ function clientSort() {
     switch (sortOrder) {
         case 'distance':
             sortedRestaurants.sort(
-                (a, b) => haversine_distance(userPos, a.location) - haversine_distance(userPos, b.location)
+                (a, b) => haversine_distance(userPos, a.location.toJSON()) - haversine_distance(userPos, b.location.toJSON())
             );
             break;
         case 'rating':
