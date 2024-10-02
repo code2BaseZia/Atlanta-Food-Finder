@@ -162,6 +162,15 @@
                         <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
                             <li class="transition-colors">
                                 <label class="flex flex-row">
+                                    <span class="grow">None</span>
+                                    <svg class="feather-sm">
+                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                    </svg>
+                                    <input type="checkbox" name="none" class="hidden" />
+                                </label>
+                            </li>
+                            <li class="transition-colors">
+                                <label class="flex flex-row">
                                     <span class="grow">Distance</span>
                                     <svg class="feather-sm">
                                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
@@ -250,11 +259,18 @@
     <div id="details" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
         <figure class="max-h-60">
             <img src="{% static 'AtlantaFoodFinder/images/placeholder.jpg' %}" alt="Restaurant Image" />
-            <button class="absolute top-4 left-4 btn btn-ghost min-h-0 min-w-0 size-10 p-2" onclick="hideDetails()">
-                <svg class="feather-md">
-                    <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
-                </svg>
-            </button>
+            <div class="absolute inset-x-0 top-0 p-4 flex flex-row justify-between">
+                <button class="btn btn-ghost min-h-0 min-w-0 size-10 p-2">
+                    <svg onclick="hideDetails()" class="feather-md">
+                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
+                    </svg>
+                </button>
+                <button onclick="handleFavorite()" class="btn btn-ghost btn-accent min-h-0 min-w-0 size-10 p-2">
+                    <svg id="favoriteIcon" class="feather-md">
+                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
+                    </svg>
+                </button>
+            </div>
         </figure>
         <div class="card-body w-full h-full justify-start overflow-y-scroll">
             <div class="w-full flex flex-row justify-between items-center">
@@ -342,5 +358,6 @@
     <script src="{% static 'AtlantaFoodFinder/js/search.js' %}"></script>
     <script src="{% static 'AtlantaFoodFinder/js/filter.js' %}"></script>
     <script src="{% static 'AtlantaFoodFinder/js/details.js' %}"></script>
+    <script src="{% static 'AtlantaFoodFinder/js/favorites.js' %}"></script>
     <script src="{% static 'AtlantaFoodFinder/js/shadow.js' %}"></script>
 {% endblock %}
