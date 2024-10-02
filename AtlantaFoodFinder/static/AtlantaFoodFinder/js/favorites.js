@@ -112,6 +112,12 @@ async function getFavorites() {
 }
 
 async function displayFavorites(favs) {
+    if (!favsContainer) {
+        return;
+    }
+
+    favsContainer.innerHTML = '';
+
     for (let fav of favs) {
         const favPlace = new Place({ id: fav });
         await favPlace.fetchFields({

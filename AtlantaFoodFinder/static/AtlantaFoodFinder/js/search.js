@@ -149,7 +149,7 @@ async function createCard(restaurant) {
 
     item.innerHTML = `
         <div class="card image-full card-compact p-0 gap-0">
-            ${ results[i].photos && results[i].photos.length > 0 ? `<figure><img src="${results[i].photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
+            ${ restaurant.photos && restaurant.photos.length > 0 ? `<figure><img src="${restaurant.photos[0].getURI()}" alt="Restaurant Image" /></figure>` : '' }
             <div class="card-body h-full justify-center bg-base-200 bg-opacity-50 hover:bg-opacity-70 active:bg-opacity-80 transition-colors">
                 <div class="w-full flex flex-row justify-between items-center">
                     <h2 class="card-title grow-0 font-heading text-2xl">${ results[i].displayName }</h2>

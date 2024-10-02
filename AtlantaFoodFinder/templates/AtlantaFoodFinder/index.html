@@ -107,12 +107,21 @@
                     <legend>Sort by:</legend>
                     <details class="dropdown w-full">
                         <summary class="list-none input input-secondary input-bordered m-1">
-                            <span class="grow">Distance</span>
+                            <span class="grow">None</span>
                             <svg class="feather-sm chevron">
                                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#chevron-down" />
                             </svg>
                         </summary>
                         <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
+                            <li>
+                                <label class="flex flex-row">
+                                    <span class="grow">None</span>
+                                    <svg class="feather-sm">
+                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
+                                    </svg>
+                                    <input type="radio" name="sort" value="none" class="hidden" />
+                                </label>
+                            </li>
                             <li>
                                 <label class="flex flex-row">
                                     <span class="grow">Distance</span>
@@ -160,15 +169,6 @@
                             </svg>
                         </summary>
                         <ul class="menu dropdown-content bg-base-200 rounded-box z-[1] w-full p-2 shadow min-w-max gap-1">
-                            <li class="transition-colors">
-                                <label class="flex flex-row">
-                                    <span class="grow">None</span>
-                                    <svg class="feather-sm">
-                                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#check" />
-                                    </svg>
-                                    <input type="checkbox" name="none" class="hidden" />
-                                </label>
-                            </li>
                             <li class="transition-colors">
                                 <label class="flex flex-row">
                                     <span class="grow">Distance</span>
@@ -259,17 +259,19 @@
     <div id="details" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl">
         <figure class="max-h-60">
             <img src="{% static 'AtlantaFoodFinder/images/placeholder.jpg' %}" alt="Restaurant Image" />
-            <div class="absolute inset-x-0 top-0 p-4 flex flex-row justify-between">
+            <div class="absolute inset-x-0 top-0 p-4 flex flex-row {% if user.is_authenticated %}justify-between{% else %}justify-start{% endif %}">
                 <button class="btn btn-ghost min-h-0 min-w-0 size-10 p-2">
                     <svg onclick="hideDetails('')" class="feather-md">
                         <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#x" />
                     </svg>
                 </button>
-                <button onclick="handleFavorite()" class="btn btn-ghost btn-accent min-h-0 min-w-0 size-10 p-2">
-                    <svg id="favoriteIcon" class="feather-md">
-                        <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
-                    </svg>
-                </button>
+                {% if user.is_authenticated %}
+                    <button onclick="handleFavorite()" class="btn btn-ghost btn-accent min-h-0 min-w-0 size-10 p-2">
+                        <svg id="favoriteIcon" class="feather-md">
+                            <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
+                        </svg>
+                    </button>
+                {% endif %}
             </div>
         </figure>
         <div class="card-body w-full h-full justify-start overflow-y-scroll">
@@ -342,10 +344,14 @@
     </div>
     <div id="favorites" class="absolute inset-y-4 right-4 card bg-base-100 w-96 max-w-[calc(100vw-7rem)] shadow-xl p-0">
         <div class="card-body h-full p-0 pb-4">
-            <h1 class="p-6 pb-2">Favorites</h1>
-            <ul id="favoriteRestaurants" class="grow w-full menu menu-vertical gap-2 overflow-scroll flex-nowrap px-6 scroll-shadow">
-                <!-- FAVORITE RESTAURANT GO HERE -->
-            </ul>
+            <h1 class="p-6 pb-4">Favorites</h1>
+            {% if user.is_authenticated %}
+                <ul id="favoriteRestaurants" class="grow w-full menu menu-vertical gap-2 overflow-scroll flex-nowrap px-6 scroll-shadow">
+                    <!-- FAVORITE RESTAURANT GO HERE -->
+                </ul>
+            {% else %}
+                <h4>You need to be loggen in to access favorites!</h4>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
