@@ -1,12 +1,9 @@
-{% extends "base.html" %}
+{% extends 'AtlantaFoodFinder/auth.html' %}
 
-{% block title %}Sign Up{% endblock %}
-
-{% block content %}
-    <h2>Sign up</h2>
-    <form method="post">
-      {% csrf_token %}
-      {{ form }}
-      <button type="submit">Sign Up</button>
-    </form>
+{% block name %}Sign Up{% endblock %}
+{% block heading %}<h1>Sign Up</h1>{% endblock %}
+{% block form %}
+    {% csrf_token %}
+    {{ form }}
 {% endblock %}
+{% block button %}<button type="submit" class="btn btn-primary">Sign Up</button>{% endblock %}

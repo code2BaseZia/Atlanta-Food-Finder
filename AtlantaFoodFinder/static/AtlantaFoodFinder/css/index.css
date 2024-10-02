@@ -656,6 +656,93 @@ html {
   --sc: 97.2648% 0.00549 211.039073;
 }
 
+h1 {
+  text-align: center;
+  font-family: Zain, sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+@media (min-width: 768px) {
+  h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  h1 {
+    font-size: 3rem;
+    line-height: 1;
+  }
+}
+
+h2 {
+  font-family: Zain, sans-serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+@media (min-width: 768px) {
+  h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  h2 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+h3 {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+@media (min-width: 768px) {
+  h3 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+h4 {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  h4 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
+h5 {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+@media (min-width: 768px) {
+  h5 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+}
+
+h6 {
+  font-family: Plus Jakarta Sans, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 700;
+}
+
 .prose {
   color: var(--tw-prose-body);
   max-width: 65ch;
@@ -6561,6 +6648,11 @@ details[open] .input {
   line-height: 2.5rem;
 }
 
+.text-5xl {
+  font-size: 3rem;
+  line-height: 1;
+}
+
 .text-base {
   font-size: 1rem;
   line-height: 1.5rem;
@@ -6888,6 +6980,223 @@ details[open] ul {
 }
 
 @media (hover:hover) {
+  label[for="id_username"] a:hover, label[for="id_password"] a:hover, label[for="id_password1"] a:hover, label[for="id_password2"] a:hover {
+    --tw-text-opacity: 1;
+    color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
+  }
+}
+
+label[for="id_username"], label[for="id_password"], label[for="id_password1"], label[for="id_password2"] {
+  display: flex;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.btm-nav > * label[for="id_username"],.btm-nav > *  label[for="id_password"],.btm-nav > *  label[for="id_password1"],.btm-nav > *  label[for="id_password2"] {
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+label[for="id_username"], label[for="id_password"], label[for="id_password1"], label[for="id_password2"] {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  --tw-text-opacity: 1;
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-text-opacity)));
+  text-align: left;
+}
+
+#id_username, #id_password, #id_password1, #id_password2 {
+  flex-shrink: 1;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  height: 3rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 1rem;
+  line-height: 2;
+  line-height: 1.5rem;
+  border-radius: var(--rounded-btn, 0.5rem);
+  border-width: 1px;
+  border-color: transparent;
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b1,oklch(var(--b1)/var(--tw-bg-opacity)));
+}
+
+#id_username[type="number"]::-webkit-inner-spin-button, #id_password[type="number"]::-webkit-inner-spin-button, #id_password1[type="number"]::-webkit-inner-spin-button, #id_password2[type="number"]::-webkit-inner-spin-button {
+  margin-top: -1rem;
+  margin-bottom: -1rem;
+  margin-inline-end: -1rem;
+}
+
+#id_username input, #id_password input, #id_password1 input, #id_password2 input {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-p,oklch(var(--p)/var(--tw-bg-opacity)));
+  background-color: transparent;
+}
+
+#id_username input:focus, #id_password input:focus, #id_password1 input:focus, #id_password2 input:focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+#id_username[list]::-webkit-calendar-picker-indicator, #id_password[list]::-webkit-calendar-picker-indicator, #id_password1[list]::-webkit-calendar-picker-indicator, #id_password2[list]::-webkit-calendar-picker-indicator {
+  line-height: 1em;
+}
+
+#id_username, #id_password, #id_password1, #id_password2 {
+  border-color: var(--fallback-bc,oklch(var(--bc)/0.2));
+}
+
+#id_username:focus,#id_username:focus-within, #id_password:focus, #id_password:focus-within, #id_password1:focus, #id_password1:focus-within, #id_password2:focus, #id_password2:focus-within {
+  box-shadow: none;
+  border-color: var(--fallback-bc,oklch(var(--bc)/0.2));
+  outline-style: solid;
+  outline-width: 2px;
+  outline-offset: 2px;
+  outline-color: var(--fallback-bc,oklch(var(--bc)/0.2));
+}
+
+#id_username, #id_password, #id_password1, #id_password2 {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-a,oklch(var(--a)/var(--tw-border-opacity)));
+}
+
+#id_username:focus,#id_username:focus-within, #id_password:focus, #id_password:focus-within, #id_password1:focus, #id_password1:focus-within, #id_password2:focus, #id_password2:focus-within {
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-a,oklch(var(--a)/var(--tw-border-opacity)));
+  outline-color: var(--fallback-a,oklch(var(--a)/1));
+}
+
+#id_username:has(> input[disabled]),#id_username:disabled,#id_username[disabled], #id_password:has(> input[disabled]), #id_password:disabled, #id_password[disabled], #id_password1:has(> input[disabled]), #id_password1:disabled, #id_password1[disabled], #id_password2:has(> input[disabled]), #id_password2:disabled, #id_password2[disabled] {
+  cursor: not-allowed;
+  --tw-border-opacity: 1;
+  border-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-border-opacity)));
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+  color: var(--fallback-bc,oklch(var(--bc)/0.4));
+}
+
+#id_username:has(> input[disabled])::-moz-placeholder, #id_username:disabled::-moz-placeholder, #id_username[disabled]::-moz-placeholder, #id_password:has(> input[disabled])::-moz-placeholder, #id_password:disabled::-moz-placeholder, #id_password[disabled]::-moz-placeholder, #id_password1:has(> input[disabled])::-moz-placeholder, #id_password1:disabled::-moz-placeholder, #id_password1[disabled]::-moz-placeholder, #id_password2:has(> input[disabled])::-moz-placeholder, #id_password2:disabled::-moz-placeholder, #id_password2[disabled]::-moz-placeholder {
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-placeholder-opacity)));
+  --tw-placeholder-opacity: 0.2;
+}
+
+#id_username:has(> input[disabled])::placeholder,#id_username:disabled::placeholder,#id_username[disabled]::placeholder, #id_password:has(> input[disabled])::placeholder, #id_password:disabled::placeholder, #id_password[disabled]::placeholder, #id_password1:has(> input[disabled])::placeholder, #id_password1:disabled::placeholder, #id_password1[disabled]::placeholder, #id_password2:has(> input[disabled])::placeholder, #id_password2:disabled::placeholder, #id_password2[disabled]::placeholder {
+  color: var(--fallback-bc,oklch(var(--bc)/var(--tw-placeholder-opacity)));
+  --tw-placeholder-opacity: 0.2;
+}
+
+#id_username:has(> input[disabled]) > input[disabled], #id_password:has(> input[disabled]) > input[disabled], #id_password1:has(> input[disabled]) > input[disabled], #id_password2:has(> input[disabled]) > input[disabled] {
+  cursor: not-allowed;
+}
+
+#id_username::-webkit-date-and-time-value, #id_password::-webkit-date-and-time-value, #id_password1::-webkit-date-and-time-value, #id_password2::-webkit-date-and-time-value {
+  text-align: inherit;
+}
+
+.mockup-browser .mockup-browser-toolbar #id_username,.mockup-browser .mockup-browser-toolbar  #id_password,.mockup-browser .mockup-browser-toolbar  #id_password1,.mockup-browser .mockup-browser-toolbar  #id_password2 {
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  height: 1.75rem;
+  width: 24rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+  padding-left: 2rem;
+  direction: ltr;
+}
+
+.mockup-browser .mockup-browser-toolbar #id_username:before,.mockup-browser .mockup-browser-toolbar  #id_password:before,.mockup-browser .mockup-browser-toolbar  #id_password1:before,.mockup-browser .mockup-browser-toolbar  #id_password2:before {
+  content: "";
+  position: absolute;
+  left: 0.5rem;
+  top: 50%;
+  aspect-ratio: 1 / 1;
+  height: 0.75rem;
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  border-radius: 9999px;
+  border-width: 2px;
+  border-color: currentColor;
+  opacity: 0.6;
+}
+
+.mockup-browser .mockup-browser-toolbar #id_username:after,.mockup-browser .mockup-browser-toolbar  #id_password:after,.mockup-browser .mockup-browser-toolbar  #id_password1:after,.mockup-browser .mockup-browser-toolbar  #id_password2:after {
+  content: "";
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  height: 0.5rem;
+  --tw-translate-y: 25%;
+  --tw-rotate: -45deg;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  border-radius: 9999px;
+  border-width: 1px;
+  border-color: currentColor;
+  opacity: 0.6;
+}
+
+#id_username, #id_password, #id_password1, #id_password2 {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b2,oklch(var(--b2)/var(--tw-bg-opacity)));
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+:not(details) > #id_username:hover,:not(details) >  #id_password:hover,:not(details) >  #id_password1:hover,:not(details) >  #id_password2:hover {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
+}
+
+:not(details) > #id_username:focus-within,:not(details) >  #id_password:focus-within,:not(details) >  #id_password1:focus-within,:not(details) >  #id_password2:focus-within {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity)));
+}
+
+details > #id_username:hover,details >  #id_password:hover,details >  #id_password1:hover,details >  #id_password2:hover {
+  --tw-bg-opacity: 1;
+  background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity)));
+}
+
+details > #id_username,details >  #id_password,details >  #id_password1,details >  #id_password2 {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+
+details[open] #id_username:hover,details[open]  #id_password:hover,details[open]  #id_password1:hover,details[open]  #id_password2:hover {
+  --tw-bg-opacity: 1 !important;
+  background-color: var(--fallback-n,oklch(var(--n)/var(--tw-bg-opacity))) !important;
+}
+
+details[open] #id_username,details[open]  #id_password,details[open]  #id_password1,details[open]  #id_password2 {
+  --tw-bg-opacity: 1 !important;
+  background-color: var(--fallback-b3,oklch(var(--b3)/var(--tw-bg-opacity))) !important;
+}
+
+#id_username_helptext, #id_password1_helptext, #id_password2_helptext {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-style: italic;
+}
+
+@media (hover:hover) {
   .table .\*\:hover > *tr:hover,
   .table .\*\:hover > *tr:nth-child(even):hover {
     --tw-bg-opacity: 1;
@@ -6996,5 +7305,24 @@ details[open] ul {
   .sm\:text-3xl {
     font-size: 1.875rem;
     line-height: 2.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .md\:text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+
+  .md\:text-4xl {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:text-5xl {
+    font-size: 3rem;
+    line-height: 1;
   }
 }
