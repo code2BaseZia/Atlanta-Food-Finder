@@ -151,6 +151,17 @@
                 <div class="card-body h-full justify-start bg-base-200 bg-opacity-40 hover:bg-opacity-50 active:bg-opacity-60 transition-colors">
                     <h2 class="card-title grow-0"></h2>
                     <p class="address grow-0"></p>
+
+                    {% if user.is_authenticated %}
+                        <button id="favoriteButton" class="btn btn-primary" onclick="toggleFavorite()">
+                        Add to Favorites
+                        </button>
+                    {% else %}
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+                        Log in to favorite
+                        </a>
+                    {% endif %}
+
                     <div class="flex flex-row justify-between">
                         <p class="rating grow-0 flex flex-row gap-2 items-center">
                             <span class="number"></span>

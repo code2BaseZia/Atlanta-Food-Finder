@@ -11,4 +11,4 @@ class Restaurant(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    favorites = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    favorites = models.ManyToManyField(Restaurant, on_delete=models.CASCADE)
