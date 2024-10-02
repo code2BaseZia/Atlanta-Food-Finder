@@ -38,11 +38,6 @@
                 <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#star" />
             </svg>
         </button>
-        <button class="btn btn-primary p-4 min-h-0 h-max rounded-full">
-            <svg class="feather-lg">
-                <use href="{% static 'AtlantaFoodFinder/icons/feather-sprite.svg' %}#settings" />
-            </svg>
-        </button>
     </div>
     <div class="absolute bottom-8 left-4 flex flex-col">
         <button onclick="reCenter()" class="btn btn-primary pb-1.5 pl-1.5 pr-2.5 pt-2.5 min-h-0 h-max rounded-full mb-2">
@@ -350,7 +345,7 @@
                     <!-- FAVORITE RESTAURANT GO HERE -->
                 </ul>
             {% else %}
-                <h4>You need to be loggen in to access favorites!</h4>
+                <h4 class="px-6 text-center">You need to be logged in to access favorites!</h4>
             {% endif %}
         </div>
     </div>
