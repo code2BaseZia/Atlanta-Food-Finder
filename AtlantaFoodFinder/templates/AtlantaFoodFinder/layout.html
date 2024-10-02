@@ -41,7 +41,7 @@
                                         </svg>
                                     </summary>
                                     <ul class="menu dropdown-content bg-base-200 !mt-2 p-2 w-max right-0 z-50">
-                                        <li><a href="{% url 'password_reset' %}">Reset Password</a></li>
+                                        <li><a href="{% url 'password_change' %}">Reset Password</a></li>
                                         <li><a href="{% url 'logout' %}" class="text-error hover:bg-error hover:bg-opacity-20 active:!text-error active:!bg-error active:!bg-opacity-40">Log Out</a></li>
                                     </ul>
                                 </details>
@@ -57,7 +57,7 @@
                 <ul class="menu menu-vertical px-2 gap-2 items-stretch">
                     <li class="font-semibold"><a href="{% url 'home' %}">Map</a></li>
                     {% if user.is_authenticated %}
-                        <li><a href="{% url 'password_reset' %}">Reset Password</a></li>
+                        <li><a href="{% url 'password_change' %}">Reset Password</a></li>
                         <li><a href="{% url 'logout' %}" class="text-error hover:bg-error hover:bg-opacity-20 active:!text-error active:!bg-error active:!bg-opacity-40">Log Out</a></li>
                     {% else %}
                         <li><a class="text-secondary active:!text-secondary" href="{% url 'login' %}">Log In</a></li>

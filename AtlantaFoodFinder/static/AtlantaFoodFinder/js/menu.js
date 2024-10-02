@@ -1,5 +1,4 @@
 const control = document.getElementById('menuControl');
-console.log(control);
 
 control.addEventListener('change', (e) => {
     if (e.target.checked) {

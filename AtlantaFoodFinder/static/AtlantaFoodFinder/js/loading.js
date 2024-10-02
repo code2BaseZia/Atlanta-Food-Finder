@@ -1,7 +1,6 @@
 const loading = document.getElementById('loading');
 
 function showLoading() {
-    console.log('showLoading');
     loading.classList.remove('hidden');
     loading.classList.add('flex');
 
@@ -10,7 +9,6 @@ function showLoading() {
 }
 
 function hideLoading() {
-    console.log('hideLoading');
     gsap.to(loading, {
         opacity: 0,
         y: 25,

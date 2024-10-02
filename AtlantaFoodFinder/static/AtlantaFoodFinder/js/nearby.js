@@ -19,7 +19,6 @@ function fetchNearbyRestaurants(position) {
 }
 
 async function placesNearbyRestaurantSearch(request) {
-    console.log(request);
     const {places} = await Place.searchNearby(request);
     restaurants = places;
 

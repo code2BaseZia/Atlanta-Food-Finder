@@ -66,7 +66,6 @@ async function initFavorites(restaurant) {
     const response = await fetch(`favorites/?id=${currentRestaurant}`);
     if (response.ok) {
         const json = await response.json();
-        console.log(json);
         favorite = json.favorites;
         if (favorite) {
             starIcon.classList.remove('fill-none');

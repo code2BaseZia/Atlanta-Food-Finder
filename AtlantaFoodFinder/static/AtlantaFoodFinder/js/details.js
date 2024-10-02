@@ -69,7 +69,6 @@ function showSkeletons() {
     element.info.price.innerHTML = placeholder.outerHTML;
     element.info.payment.innerHTML = placeholder.outerHTML;
     Object.entries(element.info.grid).forEach(([ key, v]) => {
-        console.log(v);
         if (key === "base") return
         v.removeChild(v.getElementsByTagName("svg").item(0));
         v.classList.remove('text-success', 'text-error');
@@ -147,8 +146,6 @@ async function getDetails(place) {
     initFavorites(place.id);
 
     map.panTo(place.location);
-
-    console.log(place);
 
     let statusColor, statusText;
     const isOpen = await place.isOpen();
