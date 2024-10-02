@@ -143,6 +143,8 @@ async function getDetails(place) {
 
     await place.fetchFields({fields});
 
+    initFavorites(place.id);
+
     map.panTo(place.location);
 
     console.log(place);

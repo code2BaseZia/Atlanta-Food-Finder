@@ -5467,6 +5467,20 @@ details[open] .input {
 
 @media (hover: hover) {
   @supports (color: oklch(0% 0 0)) {
+    .btn-ghost.btn-accent:hover {
+      background-color: var(--fallback-a,oklch(var(--a)/0.3));
+    }
+  }
+}
+
+@supports (color: oklch(0% 0 0)) {
+  .btn-ghost.btn-accent {
+    color: var(--fallback-a,oklch(var(--a)));
+  }
+}
+
+@media (hover: hover) {
+  @supports (color: oklch(0% 0 0)) {
     .btn-flat.btn-primary:hover {
       background-color: var(--fallback-p,oklch(var(--p)/0.75));
     }
@@ -6673,6 +6687,11 @@ details[open] .input {
   line-height: 1.75rem;
 }
 
+.text-xs {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
 .font-bold {
   font-weight: 700;
 }
@@ -7191,8 +7210,8 @@ details[open] #id_username,details[open]  #id_password,details[open]  #id_passwo
 }
 
 #id_username_helptext, #id_password1_helptext, #id_password2_helptext {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
   font-style: italic;
 }
 

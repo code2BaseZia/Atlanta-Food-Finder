@@ -70,7 +70,7 @@ async function searchNearbyPlaces(keyword) {
     const { places } = await Place.searchByText(request);
     searchedRestaurants = places;
     showOptions();
-    await updateViews(places);
+    clientSort();
 }
 
 function clearSearchedRestaurants() {

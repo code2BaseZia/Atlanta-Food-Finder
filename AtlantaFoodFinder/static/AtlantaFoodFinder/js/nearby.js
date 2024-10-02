@@ -25,7 +25,7 @@ async function placesNearbyRestaurantSearch(request) {
 
     if (!input.value) {
          hideOptions();
-         await updateViews(restaurants);
+         clientSort();
          hideLoading();
     }
 }
