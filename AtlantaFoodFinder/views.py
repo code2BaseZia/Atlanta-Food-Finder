@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, TemplateView
+from json import loads
 
 from .models import Restaurant
 
@@ -20,38 +21,27 @@ def favorites(request):
                 for restaurant in profile.favorites.all():
                     ids.append(restaurant.place_id)
                 return JsonResponse(status=200, data={ 'favorites': ids })
-        except:
-            return JsonResponse(status=500, data={'error': 'Could not get favorites'})
+        except Exception as error:
+            return JsonResponse(status=500, data={'error': str(error)})
     if request.method == 'POST':
         try:
-            restaurant_id = request.POST.get('id', False)
-            if not restaurant_id:
+            post = loads(request.body)
+            if 'id' not in post:
                 return JsonResponse(status=500, data={'error': 'You must include a restaurant id'})
-            has_restaurant = Restaurant.objects.filter(id=request.POST.get('id')).exists()
+            restaurant_id = post['id']
+            has_restaurant = Restaurant.objects.filter(place_id=restaurant_id).exists()
             if not has_restaurant:
                 Restaurant.objects.create(place_id=restaurant_id)
-            restaurant = Restaurant.objects.get(id=request.POST.get('id'))
+            restaurant = Restaurant.objects.get(place_id=restaurant_id)
             profile = request.user.profile
-            profile.favorites.add(restaurant)
-            return JsonResponse(status=200, data={'message': 'Restaurant added to favorites'})
-        except:
-            return JsonResponse(status=500, data={'error': 'Could not add to favorites'})
-    if request.method == 'DELETE':
-        try:
-            restaurant_id = request.POST.get('id', False)
-            if not restaurant_id:
-                return JsonResponse(status=500, data={'error': 'You must include a restaurant id'})
-            has_restaurant = Restaurant.objects.filter(id=request.POST.get('id')).exists()
-            if not has_restaurant:
-                return JsonResponse(status=404, data={'error': 'No restaurant found with that id'})
-            restaurant = Restaurant.objects.get(id=request.POST.get('id'))
-            profile = request.user.profile
-            if restaurant not in profile.favorites.all():
-                return JsonResponse(status=404, data={'error': 'Restaurant already not in favorites'})
-            profile.favorites.remove(restaurant)
-            return JsonResponse(status=200, data={'message': 'Restaurant added to favorites'})
-        except:
-            return JsonResponse(status=500, data={'error': 'Could not remove from favorites'})
+            if restaurant in profile.favorites.all():
+                profile.favorites.remove(restaurant)
+                return JsonResponse(status=200, data={'message': 'Restaurant removed from favorites'})
+            else:
+                profile.favorites.add(restaurant)
+                return JsonResponse(status=200, data={'message': 'Restaurant added to favorites'})
+        except Exception as error:
+            return JsonResponse(status=500, data={'error': str(error)})
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
