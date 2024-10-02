@@ -241,7 +241,8 @@ async function getDetails(place) {
     if (place.websiteURI) {
         element.contact.website.setAttribute('href', place.websiteURI);
     }
-    place.regularOpeningHours.weekdayDescriptions.forEach((weekday) => {
+    if (place.regularOpeningHours && place.weekdayDescriptions)
+        place.regularOpeningHours.weekdayDescriptions.forEach((weekday) => {
         const li = document.createElement('li');
         li.innerHTML = weekday;
         element.contact.hours.appendChild(li);
